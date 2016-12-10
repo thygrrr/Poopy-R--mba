@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Remoting.Messaging;
 using Entitas;
+using PicaVoxel;
 using UnityEngine;
 
 public class LoadLevel : IInitializeSystem, ISetPool
@@ -16,7 +17,7 @@ public class LoadLevel : IInitializeSystem, ISetPool
 
 
 		Entity roomy = _pool.CreateEntity().IsRoomy(true).IsInputReceiver(true).AddGridPosition(0, 0).AddCharge(8*8-1);
-		var roomyObj = GameObject.Instantiate(Resources.Load("Roomy") as GameObject);
+		var roomyObj = GameObject.FindGameObjectWithTag("Player");
 		roomy.AddView(roomyObj.transform);
 
 
@@ -28,10 +29,6 @@ public class LoadLevel : IInitializeSystem, ISetPool
 
 				_pool.collisionGrid.passible[i,j] = true;
 				_pool.tileGrid.tiles[i, j] = tile;
-
-
-				var tileObj = GameObject.Instantiate(Resources.Load("Tile") as GameObject);
-				tile.AddView(tileObj.transform);
 			}
 		}
 	}
@@ -184,25 +181,44 @@ public class UpdateViewPositions : IReactiveSystem, IEnsureComponents
 	}
 }
 
-public class AnimateDirty : IReactiveSystem, IEnsureComponents
+public class AnimateDirty : IInitializeSystem, IReactiveSystem
 {
+	private PicaVoxel.Volume _floor;
+
 	public TriggerOnEvent trigger
 	{
 		get { return Matcher.Dirty.OnEntityAddedOrRemoved(); }
 	}
 
-	public IMatcher ensureComponents
+	private Color RandomColor(bool dirty)
 	{
-		get { return Matcher.View; }
+		if (!dirty) return new Color(UnityEngine.Random.Range(0.8f, 0.85f), UnityEngine.Random.Range(0.85f, 0.9f), UnityEngine.Random.Range(0.75f, 0.8f), 1.0f);
+
+		return new Color(UnityEngine.Random.Range(0.3f, 0.35f), UnityEngine.Random.Range(0.2f, 0.3f), UnityEngine.Random.Range(0.0f, 0.1f), 1.0f);
 	}
-	
+
 	public void Execute(List<Entity> entities)
 	{
 		foreach (var entity in entities)
 		{
-			var animator = entity.view.transform.GetComponent<Animator>();
-			animator.SetBool("dirty", entity.isDirty);
+			var pos = entity.gridPosition.WorldPosition();
+
+			for (int i = -5; i < 6; i++)
+			{
+				for (int j = -5; j < 6; j++)
+				{
+					_floor.SetVoxelStateAtWorldPosition(
+						pos + Vector3.right * 0.049f * i + Vector3.forward * 0.049f * j,
+						entity.isDirty ? VoxelState.Active : VoxelState.Hidden
+					);
+				}
+			}
 		}
+	}
+
+	public void Initialize()
+	{
+		_floor = GameObject.FindGameObjectWithTag("Floor").GetComponent<Volume>();
 	}
 }
 
