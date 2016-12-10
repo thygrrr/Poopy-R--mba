@@ -18,6 +18,11 @@ public class Tile : IComponent
 
 }
 
+public class Charge : IComponent
+{
+	public int value;
+}
+
 [SingleEntity]
 public class CollisionGrid : IComponent
 {
@@ -54,6 +59,11 @@ public class GridPosition : IComponent
 	public Vector3 WorldPosition()
 	{
 		return new Vector3(0.5f*x, 0, 0.5f*y);
+	}
+
+	public bool Equals(int x, int y)
+	{
+		return this.x == x && this.y == y;
 	}
 }
 

@@ -8,19 +8,21 @@
 //------------------------------------------------------------------------------
 public static class ComponentIds {
 
-    public const int CollisionGrid = 0;
-    public const int Dirty = 1;
-    public const int GridPosition = 2;
-    public const int InputReceiver = 3;
-    public const int Move = 4;
-    public const int Roomy = 5;
-    public const int Tile = 6;
-    public const int TileGrid = 7;
-    public const int View = 8;
+    public const int Charge = 0;
+    public const int CollisionGrid = 1;
+    public const int Dirty = 2;
+    public const int GridPosition = 3;
+    public const int InputReceiver = 4;
+    public const int Move = 5;
+    public const int Roomy = 6;
+    public const int Tile = 7;
+    public const int TileGrid = 8;
+    public const int View = 9;
 
-    public const int TotalComponents = 9;
+    public const int TotalComponents = 10;
 
     public static readonly string[] componentNames = {
+        "Charge",
         "CollisionGrid",
         "Dirty",
         "GridPosition",
@@ -33,6 +35,7 @@ public static class ComponentIds {
     };
 
     public static readonly System.Type[] componentTypes = {
+        typeof(Charge),
         typeof(CollisionGrid),
         typeof(Dirty),
         typeof(GridPosition),

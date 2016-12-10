@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.Remoting.Messaging;
 using Entitas;
 using UnityEngine;
 
@@ -13,7 +15,7 @@ public class LoadLevel : IInitializeSystem, ISetPool
 		_pool.SetTileGrid(new Entity[8, 8]);
 
 
-		Entity roomy = _pool.CreateEntity().IsRoomy(true).IsInputReceiver(true).AddGridPosition(0, 0);
+		Entity roomy = _pool.CreateEntity().IsRoomy(true).IsInputReceiver(true).AddGridPosition(0, 0).AddCharge(8*8-1);
 		var roomyObj = GameObject.Instantiate(Resources.Load("Roomy") as GameObject);
 		roomy.AddView(roomyObj.transform);
 
@@ -22,7 +24,7 @@ public class LoadLevel : IInitializeSystem, ISetPool
 		{ 
 			for (int j = 0; j < 8; j++)
 			{
-				Entity tile = _pool.CreateEntity().IsTile(true).AddGridPosition(i, j);
+				Entity tile = _pool.CreateEntity().IsTile(true).IsDirty(true).AddGridPosition(i, j);
 
 				_pool.collisionGrid.passible[i,j] = true;
 				_pool.tileGrid.tiles[i, j] = tile;
@@ -43,12 +45,10 @@ public class LoadLevel : IInitializeSystem, ISetPool
 
 public class PlayerInput : IExecuteSystem, ISetPool
 {
-	private Pool _pool;
 	private Group _receivers;
 
 	public void SetPool(Pool pool)
 	{
-		_pool = pool;
 		_receivers = pool.GetGroup(Matcher.AllOf(Matcher.InputReceiver).NoneOf(Matcher.Move));
 	}
 
@@ -85,23 +85,49 @@ public class Movement : IExecuteSystem, ISetPool
 	{
 		foreach (Entity mover in _movers.GetEntities())
 		{
+			var x = mover.gridPosition.x;
+			var y = mover.gridPosition.y;
 			switch (mover.move.direction)
 			{
 				case Move.Direction.Up:
-					mover.ReplaceGridPosition(mover.gridPosition.x, mover.gridPosition.y+1);
+					y += 1;
 					break;
 				case Move.Direction.Left:
-					mover.ReplaceGridPosition(mover.gridPosition.x-1, mover.gridPosition.y);
+					x -= 1;
 					break;
 				case Move.Direction.Down:
-					mover.ReplaceGridPosition(mover.gridPosition.x, mover.gridPosition.y-1);
+					y -= 1;
 					break;
 				case Move.Direction.Right:
-					mover.ReplaceGridPosition(mover.gridPosition.x+1, mover.gridPosition.y);
+					x += 1;
 					break;
 			}
-
+	
 			mover.RemoveMove();
+
+			if (mover.hasCharge)
+			{
+				if (mover.charge.value <= 0)
+				{
+					return;
+				}
+
+				mover.ReplaceCharge(mover.charge.value - 1);
+			}
+
+			//Clamp agains the grid and collision rules
+			x = Math.Max(0, x);
+			y = Math.Max(0, y);
+			x = Math.Min(x, _pool.collisionGrid.passible.GetLength(0)-1);
+			y = Math.Min(y, _pool.collisionGrid.passible.GetLength(1)-1);
+
+			if (!mover.gridPosition.Equals(x, y))
+			{
+				if (_pool.collisionGrid.passible[x,y])
+				{ 
+					mover.ReplaceGridPosition(x, y);
+				}
+			}
 		}
 	}
 
@@ -155,5 +181,59 @@ public class UpdateViewPositions : IReactiveSystem, IEnsureComponents
 	public IMatcher ensureComponents
 	{
 		get { return Matcher.View; }
+	}
+}
+
+public class AnimateDirty : IReactiveSystem, IEnsureComponents
+{
+	public TriggerOnEvent trigger
+	{
+		get { return Matcher.Dirty.OnEntityAddedOrRemoved(); }
+	}
+
+	public IMatcher ensureComponents
+	{
+		get { return Matcher.View; }
+	}
+	
+	public void Execute(List<Entity> entities)
+	{
+		foreach (var entity in entities)
+		{
+			var animator = entity.view.transform.GetComponent<Animator>();
+			animator.SetBool("dirty", entity.isDirty);
+		}
+	}
+}
+
+public class VacuumTiles : IReactiveSystem, IEnsureComponents, ISetPool
+{
+	private Pool _pool;
+
+	public TriggerOnEvent trigger
+	{
+		get { return Matcher.GridPosition.OnEntityAdded(); }
+	}
+
+	public IMatcher ensureComponents
+	{
+		get { return Matcher.Roomy; }
+	}
+
+	public void SetPool(Pool pool)
+	{
+		_pool = pool;
+	}
+
+	public void Execute(List<Entity> entities)
+	{
+		foreach (var entity in entities)
+		{
+			var tile = _pool.tileGrid.tiles[entity.gridPosition.x, entity.gridPosition.y];
+
+			//TODO: If tile is still dirty, play a specific sound
+
+			tile.isDirty = false;
+		}
 	}
 }
