@@ -6,94 +6,77 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-namespace Entitas
-{
+namespace Entitas {
 
-	public partial class Entity
-	{
+    public partial class Entity {
 
-		public TileGrid tileGrid { get { return (TileGrid)GetComponent(ComponentIds.TileGrid); } }
-		public bool hasTileGrid { get { return HasComponent(ComponentIds.TileGrid); } }
+        public TileGrid tileGrid { get { return (TileGrid)GetComponent(ComponentIds.TileGrid); } }
+        public bool hasTileGrid { get { return HasComponent(ComponentIds.TileGrid); } }
 
-		public Entity AddTileGrid(Entitas.Entity[,] newTiles)
-		{
-			var component = CreateComponent<TileGrid>(ComponentIds.TileGrid);
-			component.tiles = newTiles;
-			return AddComponent(ComponentIds.TileGrid, component);
-		}
+        public Entity AddTileGrid(Entitas.Entity[,] newTiles) {
+            var component = CreateComponent<TileGrid>(ComponentIds.TileGrid);
+            component.tiles = newTiles;
+            return AddComponent(ComponentIds.TileGrid, component);
+        }
 
-		public Entity ReplaceTileGrid(Entitas.Entity[,] newTiles)
-		{
-			var component = CreateComponent<TileGrid>(ComponentIds.TileGrid);
-			component.tiles = newTiles;
-			ReplaceComponent(ComponentIds.TileGrid, component);
-			return this;
-		}
+        public Entity ReplaceTileGrid(Entitas.Entity[,] newTiles) {
+            var component = CreateComponent<TileGrid>(ComponentIds.TileGrid);
+            component.tiles = newTiles;
+            ReplaceComponent(ComponentIds.TileGrid, component);
+            return this;
+        }
 
-		public Entity RemoveTileGrid()
-		{
-			return RemoveComponent(ComponentIds.TileGrid);
-		}
-	}
+        public Entity RemoveTileGrid() {
+            return RemoveComponent(ComponentIds.TileGrid);
+        }
+    }
 
-	public partial class Pool
-	{
+    public partial class Pool {
 
-		public Entity tileGridEntity { get { return GetGroup(Matcher.TileGrid).GetSingleEntity(); } }
-		public TileGrid tileGrid { get { return tileGridEntity.tileGrid; } }
-		public bool hasTileGrid { get { return tileGridEntity != null; } }
+        public Entity tileGridEntity { get { return GetGroup(Matcher.TileGrid).GetSingleEntity(); } }
+        public TileGrid tileGrid { get { return tileGridEntity.tileGrid; } }
+        public bool hasTileGrid { get { return tileGridEntity != null; } }
 
-		public Entity SetTileGrid(Entitas.Entity[,] newTiles)
-		{
-			if (hasTileGrid)
-			{
-				throw new EntitasException("Could not set tileGrid!\n" + this + " already has an entity with TileGrid!",
-					"You should check if the pool already has a tileGridEntity before setting it or use pool.ReplaceTileGrid().");
-			}
-			var entity = CreateEntity();
-			entity.AddTileGrid(newTiles);
-			return entity;
-		}
+        public Entity SetTileGrid(Entitas.Entity[,] newTiles) {
+            if(hasTileGrid) {
+                throw new EntitasException("Could not set tileGrid!\n" + this + " already has an entity with TileGrid!",
+                    "You should check if the pool already has a tileGridEntity before setting it or use pool.ReplaceTileGrid().");
+            }
+            var entity = CreateEntity();
+            entity.AddTileGrid(newTiles);
+            return entity;
+        }
 
-		public Entity ReplaceTileGrid(Entitas.Entity[,] newTiles)
-		{
-			var entity = tileGridEntity;
-			if (entity == null)
-			{
-				entity = SetTileGrid(newTiles);
-			}
-			else
-			{
-				entity.ReplaceTileGrid(newTiles);
-			}
+        public Entity ReplaceTileGrid(Entitas.Entity[,] newTiles) {
+            var entity = tileGridEntity;
+            if(entity == null) {
+                entity = SetTileGrid(newTiles);
+            } else {
+                entity.ReplaceTileGrid(newTiles);
+            }
 
-			return entity;
-		}
+            return entity;
+        }
 
-		public void RemoveTileGrid()
-		{
-			DestroyEntity(tileGridEntity);
-		}
-	}
+        public void RemoveTileGrid() {
+            DestroyEntity(tileGridEntity);
+        }
+    }
 
-	public partial class Matcher
-	{
+    public partial class Matcher {
 
-		static IMatcher _matcherTileGrid;
+        static IMatcher _matcherTileGrid;
 
-		public static IMatcher TileGrid
-		{
-			get
-			{
-				if (_matcherTileGrid == null)
-				{
-					var matcher = (Matcher)Matcher.AllOf(ComponentIds.TileGrid);
-					matcher.componentNames = ComponentIds.componentNames;
-					_matcherTileGrid = matcher;
-				}
+        public static IMatcher TileGrid {
+            get {
+                if(_matcherTileGrid == null) {
+                    var matcher = (Matcher)Matcher.AllOf(ComponentIds.TileGrid);
+                    matcher.componentNames = ComponentIds.componentNames;
+                    _matcherTileGrid = matcher;
+                }
 
-				return _matcherTileGrid;
-			}
-		}
-	}
+                return _matcherTileGrid;
+            }
+        }
+    }
 }

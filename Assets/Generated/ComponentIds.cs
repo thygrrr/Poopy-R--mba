@@ -11,27 +11,36 @@ public static class ComponentIds {
     public const int CollisionGrid = 0;
     public const int Dirty = 1;
     public const int GridPosition = 2;
-    public const int Roomy = 3;
-    public const int Tile = 4;
-    public const int TileGrid = 5;
+    public const int InputReceiver = 3;
+    public const int Move = 4;
+    public const int Roomy = 5;
+    public const int Tile = 6;
+    public const int TileGrid = 7;
+    public const int View = 8;
 
-    public const int TotalComponents = 6;
+    public const int TotalComponents = 9;
 
     public static readonly string[] componentNames = {
         "CollisionGrid",
         "Dirty",
         "GridPosition",
+        "InputReceiver",
+        "Move",
         "Roomy",
         "Tile",
-        "TileGrid"
+        "TileGrid",
+        "View"
     };
 
     public static readonly System.Type[] componentTypes = {
         typeof(CollisionGrid),
         typeof(Dirty),
         typeof(GridPosition),
+        typeof(InputReceiver),
+        typeof(Move),
         typeof(Roomy),
         typeof(Tile),
-        typeof(TileGrid)
+        typeof(TileGrid),
+        typeof(View)
     };
 }

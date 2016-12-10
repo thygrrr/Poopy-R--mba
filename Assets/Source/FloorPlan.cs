@@ -15,6 +15,12 @@ public class FloorPlan : MonoBehaviour
 		systems = new Systems();
 
 		systems.Add(pool.CreateSystem(new LoadLevel()));
+		systems.Add(pool.CreateSystem(new LinkViewsToEntities()));
+
+		systems.Add(pool.CreateSystem(new PlayerInput()));
+		systems.Add(pool.CreateSystem(new Movement()));
+
+		systems.Add(pool.CreateSystem(new UpdateViewPositions()));
 	}
 
 

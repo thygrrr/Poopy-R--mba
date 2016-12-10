@@ -1,4 +1,5 @@
-﻿using Entitas;
+﻿using System.Security.Permissions;
+using Entitas;
 using Entitas.CodeGenerator;
 using UnityEngine;
 
@@ -35,6 +36,16 @@ public class Roomy : IComponent
 	
 }
 
+public class Move : IComponent
+{
+	public Direction direction;
+
+	public enum Direction
+	{
+		Up, Left, Down, Right
+	}
+}
+
 public class GridPosition : IComponent
 {
 	public int x;
@@ -44,4 +55,9 @@ public class GridPosition : IComponent
 	{
 		return new Vector3(0.5f*x, 0, 0.5f*y);
 	}
+}
+
+public class InputReceiver : IComponent
+{
+	
 }
