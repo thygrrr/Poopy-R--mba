@@ -4,7 +4,8 @@
 [Bb]uild/
 
 # Required 3rd party libraries. Sorry, they're not all FOSS
-PanicButton/
+PanicButton*
+PicaVoxel*
 ProCore*
 Entitas*
 
