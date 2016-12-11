@@ -17,9 +17,9 @@ public class UpdateViewPositions : IExecuteSystem, ISetPool
 		foreach (var mover in _movers.GetEntities())
 		{
 			var goal = mover.gridPosition.WorldPosition();
-			mover.view.transform.position = Vector3.MoveTowards(mover.view.transform.position, goal, Time.deltaTime*1.5f);
-
 			if (goal == mover.view.transform.position) mover.isTraveling = false;
+
+			mover.view.transform.position = Vector3.MoveTowards(mover.view.transform.position, goal, Time.deltaTime*1.5f);
 		}
 	}
 }
@@ -32,7 +32,7 @@ public class UpdateViewOrientations : IExecuteSystem, ISetPool
 
 	public void SetPool(Pool pool)
 	{
-		_movers = pool.GetGroup(Matcher.AllOf(Matcher.View, Matcher.Heading));
+		_movers = pool.GetGroup(Matcher.AllOf(Matcher.View, Matcher.Heading, Matcher.Orienting));
 	}
 
 	public void Execute()
@@ -41,9 +41,9 @@ public class UpdateViewOrientations : IExecuteSystem, ISetPool
 		{
 			var goal = Quaternion.AngleAxis(Heading.angles[mover.heading.direction], Vector3.up);
 
-			mover.view.transform.rotation = Quaternion.RotateTowards(mover.view.transform.rotation, goal, Time.deltaTime*540.0f);
-
 			if (goal == mover.view.transform.rotation) mover.isOrienting = false;
+
+			mover.view.transform.rotation = Quaternion.RotateTowards(mover.view.transform.rotation, goal, Time.deltaTime*540.0f);
 		}
 	}
 }

@@ -7,12 +7,12 @@ public class Pickups : IReactiveSystem, IEnsureComponents, ISetPool
 
 	public TriggerOnEvent trigger
 	{
-		get { return Matcher.GridPosition.OnEntityAdded(); }
+		get { return Matcher.Traveling.OnEntityRemoved(); }
 	}
 
 	public IMatcher ensureComponents
 	{
-		get { return Matcher.Roomy; }
+		get { return Matcher.AllOf(Matcher.Roomy).NoneOf(Matcher.Traveling); }
 	}
 
 	public void SetPool(Pool pool)
