@@ -17,7 +17,7 @@ public class UpdateViewPositions : IExecuteSystem, ISetPool
 		foreach (var mover in _movers.GetEntities())
 		{
 			var goal = mover.gridPosition.WorldPosition();
-			mover.view.transform.position = Vector3.MoveTowards(mover.view.transform.position, goal, Time.deltaTime);
+			mover.view.transform.position = Vector3.MoveTowards(mover.view.transform.position, goal, Time.deltaTime*1.5f);
 
 			if (goal == mover.view.transform.position) mover.isTraveling = false;
 		}

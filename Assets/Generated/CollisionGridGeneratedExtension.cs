@@ -13,15 +13,17 @@ namespace Entitas {
         public CollisionGrid collisionGrid { get { return (CollisionGrid)GetComponent(ComponentIds.CollisionGrid); } }
         public bool hasCollisionGrid { get { return HasComponent(ComponentIds.CollisionGrid); } }
 
-        public Entity AddCollisionGrid(bool[,] newPassible) {
+        public Entity AddCollisionGrid(bool[,] newPassible, bool[,] newOccupied) {
             var component = CreateComponent<CollisionGrid>(ComponentIds.CollisionGrid);
             component.passible = newPassible;
+            component.occupied = newOccupied;
             return AddComponent(ComponentIds.CollisionGrid, component);
         }
 
-        public Entity ReplaceCollisionGrid(bool[,] newPassible) {
+        public Entity ReplaceCollisionGrid(bool[,] newPassible, bool[,] newOccupied) {
             var component = CreateComponent<CollisionGrid>(ComponentIds.CollisionGrid);
             component.passible = newPassible;
+            component.occupied = newOccupied;
             ReplaceComponent(ComponentIds.CollisionGrid, component);
             return this;
         }
@@ -37,22 +39,22 @@ namespace Entitas {
         public CollisionGrid collisionGrid { get { return collisionGridEntity.collisionGrid; } }
         public bool hasCollisionGrid { get { return collisionGridEntity != null; } }
 
-        public Entity SetCollisionGrid(bool[,] newPassible) {
+        public Entity SetCollisionGrid(bool[,] newPassible, bool[,] newOccupied) {
             if(hasCollisionGrid) {
                 throw new EntitasException("Could not set collisionGrid!\n" + this + " already has an entity with CollisionGrid!",
                     "You should check if the pool already has a collisionGridEntity before setting it or use pool.ReplaceCollisionGrid().");
             }
             var entity = CreateEntity();
-            entity.AddCollisionGrid(newPassible);
+            entity.AddCollisionGrid(newPassible, newOccupied);
             return entity;
         }
 
-        public Entity ReplaceCollisionGrid(bool[,] newPassible) {
+        public Entity ReplaceCollisionGrid(bool[,] newPassible, bool[,] newOccupied) {
             var entity = collisionGridEntity;
             if(entity == null) {
-                entity = SetCollisionGrid(newPassible);
+                entity = SetCollisionGrid(newPassible, newOccupied);
             } else {
-                entity.ReplaceCollisionGrid(newPassible);
+                entity.ReplaceCollisionGrid(newPassible, newOccupied);
             }
 
             return entity;

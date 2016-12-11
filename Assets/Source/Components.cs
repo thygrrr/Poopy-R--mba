@@ -28,6 +28,7 @@ public class Charge : IComponent
 public class CollisionGrid : IComponent
 {
 	public bool[,] passible;
+	public bool[,] occupied;
 }
 
 [SingleEntity]
