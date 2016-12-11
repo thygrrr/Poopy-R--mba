@@ -20,6 +20,7 @@ public class FloorPlan : MonoBehaviour
 		systems.Add(pool.CreateSystem(new Pickups()));
 
 		systems.Add(pool.CreateSystem(new InitViewPositions()));
+		systems.Add(pool.CreateSystem(new UpdateViewOrientations()));
 		systems.Add(pool.CreateSystem(new UpdateViewPositions()));
 
 		systems.Add(pool.CreateSystem(new SpreadPoo()));

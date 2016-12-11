@@ -28,8 +28,14 @@ public class Movement : IExecuteSystem, ISetPool
 					break;
 			}
 
+			mover.ReplaceHeading(mover.move.direction);
 			mover.RemoveMove();
 
+			//Hand over to travel system from here on
+			mover.isTraveling = true;
+			mover.isOrienting = true;
+
+			//TODO: move to battery charge system
 			if (mover.hasCharge)
 			{
 				if (mover.charge.value <= 0) continue;
@@ -37,6 +43,7 @@ public class Movement : IExecuteSystem, ISetPool
 				mover.ReplaceCharge(mover.charge.value - 1);
 			}
 
+			//Apply logical grid movement
 			//Clamp agains the grid and collision rules
 			x = Math.Max(0, x);
 			y = Math.Max(0, y);
@@ -54,6 +61,6 @@ public class Movement : IExecuteSystem, ISetPool
 	public void SetPool(Pool pool)
 	{
 		_pool = pool;
-		_movers = pool.GetGroup(Matcher.Move);
+		_movers = pool.GetGroup(Matcher.AllOf(Matcher.Move).NoneOf(Matcher.Traveling));
 	}
 }

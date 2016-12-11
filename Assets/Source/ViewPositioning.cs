@@ -9,25 +9,42 @@ public class UpdateViewPositions : IExecuteSystem, ISetPool
 
 	public void SetPool(Pool pool)
 	{
-		_movers = pool.GetGroup(Matcher.AllOf(Matcher.View, Matcher.GridPosition));
+		_movers = pool.GetGroup(Matcher.AllOf(Matcher.View, Matcher.GridPosition, Matcher.Traveling).NoneOf(Matcher.Orienting));
 	}
 
 	public void Execute()
 	{
 		foreach (var mover in _movers.GetEntities())
 		{
-			mover.view.transform.position = Vector3.MoveTowards(mover.view.transform.position, mover.gridPosition.WorldPosition(), Time.deltaTime);
+			var goal = mover.gridPosition.WorldPosition();
+			mover.view.transform.position = Vector3.MoveTowards(mover.view.transform.position, goal, Time.deltaTime);
+
+			if (goal == mover.view.transform.position) mover.isTraveling = false;
 		}
 	}
+}
 
-	public TriggerOnEvent trigger
+
+
+public class UpdateViewOrientations : IExecuteSystem, ISetPool
+{
+	private Group _movers;
+
+	public void SetPool(Pool pool)
 	{
-		get { return Matcher.View.OnEntityAdded(); }
+		_movers = pool.GetGroup(Matcher.AllOf(Matcher.View, Matcher.Heading));
 	}
 
-	public IMatcher ensureComponents
+	public void Execute()
 	{
-		get { return Matcher.AllOf(Matcher.View, Matcher.GridPosition); }
+		foreach (var mover in _movers.GetEntities())
+		{
+			var goal = Quaternion.AngleAxis(Heading.angles[mover.heading.direction], Vector3.up);
+
+			mover.view.transform.rotation = Quaternion.RotateTowards(mover.view.transform.rotation, goal, Time.deltaTime*540.0f);
+
+			if (goal == mover.view.transform.rotation) mover.isOrienting = false;
+		}
 	}
 }
 

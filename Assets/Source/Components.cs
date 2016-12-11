@@ -1,4 +1,5 @@
-﻿using System.Security.Permissions;
+﻿using System.Collections.Generic;
+using System.Security.Permissions;
 using Entitas;
 using Entitas.CodeGenerator;
 using UnityEngine;
@@ -57,6 +58,27 @@ public class Move : IComponent
 	{
 		Up, Left, Down, Right
 	}
+}
+
+public class Heading : IComponent
+{
+	public Move.Direction direction;
+
+	public static Dictionary<Move.Direction, float> angles = new Dictionary<Move.Direction, float>()
+	{
+		{Move.Direction.Up, 0},
+		{Move.Direction.Down, 180},
+		{Move.Direction.Right, 90},
+		{Move.Direction.Left, -90},
+	};
+}
+
+public class Traveling : IComponent
+{
+}
+
+public class Orienting : IComponent
+{
 }
 
 public class GridPosition : IComponent

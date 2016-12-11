@@ -12,31 +12,37 @@ public static class ComponentIds {
     public const int CollisionGrid = 1;
     public const int Dirty = 2;
     public const int GridPosition = 3;
-    public const int InputReceiver = 4;
-    public const int Move = 5;
-    public const int Physics = 6;
-    public const int Poop = 7;
-    public const int Roomy = 8;
-    public const int Score = 9;
-    public const int Tile = 10;
-    public const int TileGrid = 11;
-    public const int View = 12;
+    public const int Heading = 4;
+    public const int InputReceiver = 5;
+    public const int Move = 6;
+    public const int Orienting = 7;
+    public const int Physics = 8;
+    public const int Poop = 9;
+    public const int Roomy = 10;
+    public const int Score = 11;
+    public const int Tile = 12;
+    public const int TileGrid = 13;
+    public const int Traveling = 14;
+    public const int View = 15;
 
-    public const int TotalComponents = 13;
+    public const int TotalComponents = 16;
 
     public static readonly string[] componentNames = {
         "Charge",
         "CollisionGrid",
         "Dirty",
         "GridPosition",
+        "Heading",
         "InputReceiver",
         "Move",
+        "Orienting",
         "Physics",
         "Poop",
         "Roomy",
         "Score",
         "Tile",
         "TileGrid",
+        "Traveling",
         "View"
     };
 
@@ -45,14 +51,17 @@ public static class ComponentIds {
         typeof(CollisionGrid),
         typeof(Dirty),
         typeof(GridPosition),
+        typeof(Heading),
         typeof(InputReceiver),
         typeof(Move),
+        typeof(Orienting),
         typeof(Physics),
         typeof(Poop),
         typeof(Roomy),
         typeof(Score),
         typeof(Tile),
         typeof(TileGrid),
+        typeof(Traveling),
         typeof(View)
     };
 }

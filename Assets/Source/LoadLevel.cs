@@ -12,7 +12,7 @@ public class LoadLevel : IInitializeSystem, ISetPool
 		_pool.SetScore(0);
 
 
-		Entity roomy = _pool.CreateEntity().IsRoomy(true).IsInputReceiver(true).AddGridPosition(0, 0).AddCharge(8 * 8 - 1);
+		Entity roomy = _pool.CreateEntity().IsRoomy(true).IsInputReceiver(true).AddGridPosition(0, 0).AddCharge(8 * 8 - 1).AddHeading(Move.Direction.Up);
 		var roomyObj = GameObject.FindGameObjectWithTag("Player");
 		roomy.AddView(roomyObj.transform);
 
