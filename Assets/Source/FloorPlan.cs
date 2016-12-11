@@ -20,7 +20,7 @@ public class FloorPlan : MonoBehaviour
 		systems.Add(pool.CreateSystem(new PlayerInput()));
 		systems.Add(pool.CreateSystem(new Movement()));
 
-		systems.Add(pool.CreateSystem(new VacuumTiles()));
+		systems.Add(pool.CreateSystem(new Pickups()));
 
 		systems.Add(pool.CreateSystem(new InitViewPositions()));
 
