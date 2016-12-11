@@ -13,10 +13,25 @@ public class LoadLevel : IInitializeSystem, ISetPool, IComparer<Entity>
 	private Pool _pool;
 
 	//Roughly ordered by size (magic knowledge.
-	private static readonly string[] assets =
+	private static string[] large =
 	{
 		"Table4", "Table3s", "Table3n", "Table3e", "Table3w", "Table2v", "Table2h",
-		"Table1n", "Table1s", "Table", "CoffeeTable", "Sofa2e", "Sofa2w", "Sofa2s", "Sofa2n", "Chairn", "Chairs", "Chaire", "Chairw"
+		"Table1n", "Table1s", "Table"
+	};
+
+	private static string[] medium =
+	{
+		"Boxes", "Boxes", "CoffeeTable", "CoffeeTable", "Wall2h",  "Wall2v",  "Sofa2e", "Sofa2w", "Boxes2", "Sofa2s", "Sofa2n", "Boxes2"
+	};
+
+	private static string[] small =
+	{
+		 "Chairn", "Chairs", "Chaire", "Chairw"
+	};
+
+	private static string[] lights =
+	{
+		 "Lamp"
 	};
 
 	private static readonly int[] difficulty =
@@ -38,7 +53,10 @@ public class LoadLevel : IInitializeSystem, ISetPool, IComparer<Entity>
 
 		GenerateLevel(length);
 
-		LoadObstacles();
+		LoadObstacles(lights, 2);
+		LoadObstacles(large);
+		LoadObstacles(medium);
+		LoadObstacles(small);
 
 		Entity roomy = _pool.GetGroup(Matcher.Roomy).GetSingleEntity();
 		roomy.AddCharge(length + DistanceToPoo(roomy.gridPosition.x, roomy.gridPosition.y));
@@ -266,7 +284,7 @@ public class LoadLevel : IInitializeSystem, ISetPool, IComparer<Entity>
 		}
 	}
 
-	private void LoadObstacles()
+	private void LoadObstacles(string[] assets, int count = int.MaxValue)
 	{
 		obstacles = new GameObject[assets.Length];
 		footprints = new Footprint[assets.Length];
@@ -281,11 +299,16 @@ public class LoadLevel : IInitializeSystem, ISetPool, IComparer<Entity>
 		var group = _pool.GetGroup(Matcher.Impassible);
 		var spots = group.GetEntities();
 		Array.Sort<Entity>(spots, this);
-		
+
+		//Select small spots first for lights.
+		if (count < int.MaxValue) Array.Reverse(spots);
+
 		foreach (var spot in spots)
 		{
 			var x = spot.gridPosition.x;
 			var y = spot.gridPosition.y;
+
+			Shuffle<GameObject, Footprint>(obstacles, footprints);
 
 			for (int i = 0; i < assets.Length; i++)
 			{
@@ -293,9 +316,11 @@ public class LoadLevel : IInitializeSystem, ISetPool, IComparer<Entity>
 				{
 					Occupy(x, y, footprints[i].mask);
 					Place(x, y, obstacles[i]);
+					count--;
 					break;
 				}
 			}
+			if (count == 0) return;
 		}
 	}
 
