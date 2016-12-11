@@ -16,11 +16,12 @@ public static class ComponentIds {
     public const int Move = 5;
     public const int Poop = 6;
     public const int Roomy = 7;
-    public const int Tile = 8;
-    public const int TileGrid = 9;
-    public const int View = 10;
+    public const int Score = 8;
+    public const int Tile = 9;
+    public const int TileGrid = 10;
+    public const int View = 11;
 
-    public const int TotalComponents = 11;
+    public const int TotalComponents = 12;
 
     public static readonly string[] componentNames = {
         "Charge",
@@ -31,6 +32,7 @@ public static class ComponentIds {
         "Move",
         "Poop",
         "Roomy",
+        "Score",
         "Tile",
         "TileGrid",
         "View"
@@ -45,6 +47,7 @@ public static class ComponentIds {
         typeof(Move),
         typeof(Poop),
         typeof(Roomy),
+        typeof(Score),
         typeof(Tile),
         typeof(TileGrid),
         typeof(View)

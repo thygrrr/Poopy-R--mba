@@ -35,6 +35,11 @@ public class TileGrid : IComponent
 	public Entity[,] tiles;
 }
 
+[SingleEntity]
+public class Score : IComponent
+{
+	public int value;
+}
 
 public class Roomy : IComponent
 {

@@ -13,6 +13,7 @@ public class LoadLevel : IInitializeSystem, ISetPool
 	{
 		_pool.SetCollisionGrid(new bool[8, 8]);
 		_pool.SetTileGrid(new Entity[8, 8]);
+		_pool.SetScore(0);
 
 
 		Entity roomy = _pool.CreateEntity().IsRoomy(true).IsInputReceiver(true).AddGridPosition(0, 0).AddCharge(8 * 8 - 1);

@@ -1,14 +1,16 @@
 ﻿using Entitas;
+using Entitas.Unity.VisualDebugging;
 using PicaVoxel;
 using UnityEngine;
 
-public class AnimateDirty : IInitializeSystem, IExecuteSystem, ISetPool
+public class SpreadPoo : IInitializeSystem, IExecuteSystem, ISetPool
 {
 	private Pool _pool;
 	private Group _group;
 
 	public void SetPool(Pool pool)
 	{
+		_pool = pool;
 		_group = pool.GetGroup(Matcher.AllOf(Matcher.Dirty, Matcher.View));
 	}
 
@@ -30,13 +32,23 @@ public class AnimateDirty : IInitializeSystem, IExecuteSystem, ISetPool
 			pos.x += UnityEngine.Random.Range(-0.2f, 0.2f);
 			pos.z += UnityEngine.Random.Range(-0.2f, 0.2f);
 
-			_floor.SetVoxelStateAtWorldPosition(pos, VoxelState.Active);
+			var voxel = _floor.GetVoxelAtWorldPosition(pos);
+			if (voxel != null && voxel.Value.State != VoxelState.Active)
+			{
+				_floor.SetVoxelStateAtWorldPosition(pos, VoxelState.Active);
+				_pool.ReplaceScore(_pool.score.value + 1);
+			}
 
 			pos = entity.view.transform.position;
 			pos.x += UnityEngine.Random.Range(-0.08f, 0.08f);
 			pos.z += UnityEngine.Random.Range(-0.08f, 0.08f);
 
-			_floor.SetVoxelStateAtWorldPosition(pos, VoxelState.Active);
+			voxel = _floor.GetVoxelAtWorldPosition(pos);
+			if (voxel != null && voxel.Value.State != VoxelState.Active)
+			{
+				_floor.SetVoxelStateAtWorldPosition(pos, VoxelState.Active);
+				_pool.ReplaceScore(_pool.score.value + 1);
+			}
 		}
 	}
 
