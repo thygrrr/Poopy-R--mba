@@ -19,7 +19,7 @@ public class Footprint : MonoBehaviour
 
 			foreach (int row in data)
 			{
-				width = (int)Mathf.Max(width, Mathf.Floor(Mathf.Log10(row)));
+				width = (int)Mathf.Max(width, Mathf.Floor(Mathf.Log10(row)+1));
 			}
 
 			_mask = new bool[width, height];

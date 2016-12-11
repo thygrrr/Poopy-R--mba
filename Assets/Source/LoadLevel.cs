@@ -9,7 +9,7 @@ public class LoadLevel : IInitializeSystem, ISetPool
 	private Pool _pool;
 
 	//Roughly ordered by size (magic knowledge.
-	private static readonly string[] assets = {"Table", "Sofa", "Chair"};
+	private static readonly string[] assets = { "Table4", "Table3s", "Table3n", "Table3e", "Table3w", "Table2v", "Table2h", "Table1n", "Table1s", "Table", "Sofa2e", "Sofa2w", "Sofa2s", "Sofa2n", "Chair" };
 
 	private static GameObject[] obstacles;
 	private static Footprint[] footprints;
@@ -32,6 +32,34 @@ public class LoadLevel : IInitializeSystem, ISetPool
 
 		GenerateLevel();
 		LoadObstacles();
+
+
+		//DEBUG blocks
+		/*
+		for (int x = 0; x < _pool.collisionGrid.passible.GetLength(0); x++)
+		{
+			for (int y = 0; y < _pool.collisionGrid.passible.GetLength(1); y++)
+			{
+				var prefab = Resources.Load("Blocked") as GameObject;
+				var obj = GameObject.Instantiate(prefab);
+				obj.transform.position = new GridPosition() { x = x, y = y }.WorldPosition();
+
+				if (!_pool.collisionGrid.passible[x, y])
+				{
+					obj.GetComponent<MeshRenderer>().material.color = Color.blue;
+				}
+				if (_pool.collisionGrid.occupied[x, y])
+				{
+					obj.GetComponent<MeshRenderer>().material.color = Color.red;
+				}
+				if (_pool.collisionGrid.occupied[x, y] && _pool.collisionGrid.passible[x, y])
+				{
+					obj.GetComponent<MeshRenderer>().material.color = Color.magenta;
+				}
+			}
+		}
+		*/
+
 	}
 
 
@@ -42,9 +70,8 @@ public class LoadLevel : IInitializeSystem, ISetPool
 		{
 			for (int y = 0; y < _pool.collisionGrid.passible.GetLength(1); y++)
 			{
-				_pool.collisionGrid.passible[x, y] = (Random.Range(0, 5) > 1);
+				_pool.collisionGrid.passible[x, y] = (Random.Range(0, 4) > 2);
 				_pool.collisionGrid.occupied[x, y] = false;
-
 				_pool.tileGrid.tiles[x, y] = _pool.CreateEntity().IsTile(true).AddGridPosition(x, y);
 			}
 		}
@@ -52,6 +79,7 @@ public class LoadLevel : IInitializeSystem, ISetPool
 		//Reserve a spot for our roomy. TODO: Randomize as well
 		_pool.collisionGrid.passible[0,0] = false;
 	}
+
 
 	private bool Fits(int x, int y, bool[,] mask)
 	{
@@ -68,6 +96,10 @@ public class LoadLevel : IInitializeSystem, ISetPool
 
 				//Check if mask fits.
 				if (mask[i, j] && (passible || occupied)) return false;
+
+				//This means the mask has a hole but the map requires it
+				//to be solid. This prevents overlapping furniture.
+				if (!mask[i, j] && !passible) return false;
 			}
 		}
 		return true;
@@ -79,7 +111,7 @@ public class LoadLevel : IInitializeSystem, ISetPool
 		//CAVEAT: This works because we just checked it Fits(). No warranties. :)
 		for (int i = 0; i < mask.GetLength(0); i++)
 		{
-			for (int j = 0; j < mask.GetLength(0); j++)
+			for (int j = 0; j < mask.GetLength(1); j++)
 			{
 				_pool.collisionGrid.occupied[x + i, y + j] = mask[i,j];
 			}
