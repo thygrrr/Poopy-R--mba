@@ -29,12 +29,10 @@ public class LinkViewsToEntities : IReactiveSystem, ISetPool
 
 public class UpdateViewPositions : IExecuteSystem, ISetPool, IEnsureComponents
 {
-	private Pool _pool;
 	private Group _movers;
 
 	public void SetPool(Pool pool)
 	{
-		_pool = pool;
 		_movers = pool.GetGroup(Matcher.AllOf(Matcher.View, Matcher.GridPosition));
 	}
 
