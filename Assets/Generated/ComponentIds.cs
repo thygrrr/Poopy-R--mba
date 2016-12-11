@@ -11,29 +11,34 @@ public static class ComponentIds {
     public const int Charge = 0;
     public const int CollisionGrid = 1;
     public const int Dirty = 2;
-    public const int GridPosition = 3;
-    public const int Heading = 4;
-    public const int InputReceiver = 5;
-    public const int Move = 6;
-    public const int Orienting = 7;
-    public const int Physics = 8;
-    public const int PooDistance = 9;
-    public const int Poop = 10;
-    public const int Roomy = 11;
-    public const int Score = 12;
-    public const int Tile = 13;
-    public const int TileGrid = 14;
-    public const int Traveling = 15;
-    public const int View = 16;
+    public const int Failure = 3;
+    public const int GridPosition = 4;
+    public const int Heading = 5;
+    public const int Impassible = 6;
+    public const int InputReceiver = 7;
+    public const int Move = 8;
+    public const int Orienting = 9;
+    public const int Physics = 10;
+    public const int PooDistance = 11;
+    public const int Poop = 12;
+    public const int Roomy = 13;
+    public const int Score = 14;
+    public const int Success = 15;
+    public const int Tile = 16;
+    public const int TileGrid = 17;
+    public const int Traveling = 18;
+    public const int View = 19;
 
-    public const int TotalComponents = 17;
+    public const int TotalComponents = 20;
 
     public static readonly string[] componentNames = {
         "Charge",
         "CollisionGrid",
         "Dirty",
+        "Failure",
         "GridPosition",
         "Heading",
+        "Impassible",
         "InputReceiver",
         "Move",
         "Orienting",
@@ -42,6 +47,7 @@ public static class ComponentIds {
         "Poop",
         "Roomy",
         "Score",
+        "Success",
         "Tile",
         "TileGrid",
         "Traveling",
@@ -52,8 +58,10 @@ public static class ComponentIds {
         typeof(Charge),
         typeof(CollisionGrid),
         typeof(Dirty),
+        typeof(Failure),
         typeof(GridPosition),
         typeof(Heading),
+        typeof(Impassible),
         typeof(InputReceiver),
         typeof(Move),
         typeof(Orienting),
@@ -62,6 +70,7 @@ public static class ComponentIds {
         typeof(Poop),
         typeof(Roomy),
         typeof(Score),
+        typeof(Success),
         typeof(Tile),
         typeof(TileGrid),
         typeof(Traveling),

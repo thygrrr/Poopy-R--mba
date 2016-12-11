@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Entitas;
+using Entitas.Unity.VisualDebugging;
+using UnityEngine;
 
 public class Pickups : IReactiveSystem, IEnsureComponents, ISetPool
 {
@@ -30,7 +32,11 @@ public class Pickups : IReactiveSystem, IEnsureComponents, ISetPool
 			if (tile.isPoop)
 			{
 				tile.isPoop = false;
+				Object.Destroy(tile.view.transform.gameObject);
+				tile.RemoveView();
 				entity.isDirty = true;
+
+				//TODO: Play sound.
 			}
 		}
 	}

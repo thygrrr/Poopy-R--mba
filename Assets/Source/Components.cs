@@ -163,3 +163,19 @@ public class PooDistance : IComponent
 {
 	public int distance;
 }
+
+public class Impassible : IComponent
+{
+}
+
+[SingleEntity]
+public class Failure : IComponent
+{
+	
+}
+
+[SingleEntity]
+public class Success : IComponent
+{
+	
+}

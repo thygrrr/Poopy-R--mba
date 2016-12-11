@@ -8,7 +8,7 @@ using UnityEditorInternal;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class LoadLevel : IInitializeSystem, ISetPool
+public class LoadLevel : IInitializeSystem, ISetPool, IComparer<Entity>
 {
 	private Pool _pool;
 
@@ -16,7 +16,12 @@ public class LoadLevel : IInitializeSystem, ISetPool
 	private static readonly string[] assets =
 	{
 		"Table4", "Table3s", "Table3n", "Table3e", "Table3w", "Table2v", "Table2h",
-		"Table1n", "Table1s", "Table", "Sofa2e", "Sofa2w", "Sofa2s", "Sofa2n", "Chairn", "Chairs", "Chaire", "Chairw"
+		"Table1n", "Table1s", "Table", "CoffeeTable", "Sofa2e", "Sofa2w", "Sofa2s", "Sofa2n", "Chairn", "Chairs", "Chaire", "Chairw"
+	};
+
+	private static readonly int[] difficulty =
+	{
+		5, 8, 12, 16, 20, 24, 30, 33, 36, 38, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49
 	};
 
 
@@ -29,45 +34,14 @@ public class LoadLevel : IInitializeSystem, ISetPool
 		_pool.SetTileGrid(new Entity[8, 8]);
 		_pool.SetScore(0);
 
+		var length = difficulty[5];
 
-		var difficulty = 10;
-
-		GenerateLevel(difficulty);
+		GenerateLevel(length);
 
 		LoadObstacles();
 
 		Entity roomy = _pool.GetGroup(Matcher.Roomy).GetSingleEntity();
-		roomy.AddCharge(difficulty + DistanceToPoo(roomy.gridPosition.x, roomy.gridPosition.y));
-
-		//TODO: Multiply with a difficulty modifier, perfect gameplay can be hard.
-
-
-
-		//DEBUG blocks
-		/*
-		for (int x = 0; x < _pool.collisionGrid.passible.GetLength(0); x++)
-		{
-			for (int y = 0; y < _pool.collisionGrid.passible.GetLength(1); y++)
-			{
-				var prefab = Resources.Load("Blocked") as GameObject;
-				var obj = GameObject.Instantiate(prefab);
-				obj.transform.position = new GridPosition() { x = x, y = y }.WorldPosition();
-
-				if (!_pool.collisionGrid.passible[x, y])
-				{
-					obj.GetComponent<MeshRenderer>().material.color = Color.blue;
-				}
-				if (_pool.collisionGrid.occupied[x, y])
-				{
-					obj.GetComponent<MeshRenderer>().material.color = Color.red;
-				}
-				if (_pool.collisionGrid.occupied[x, y] && _pool.collisionGrid.passible[x, y])
-				{
-					obj.GetComponent<MeshRenderer>().material.color = Color.magenta;
-				}
-			}
-		}
-		*/
+		roomy.AddCharge(length + DistanceToPoo(roomy.gridPosition.x, roomy.gridPosition.y));
 	}
 
 
@@ -80,7 +54,7 @@ public class LoadLevel : IInitializeSystem, ISetPool
 			{
 				_pool.collisionGrid.passible[x, y] = false;
 				_pool.collisionGrid.occupied[x, y] = false;
-				_pool.tileGrid.tiles[x, y] = _pool.CreateEntity().IsTile(true).AddGridPosition(x, y);
+				_pool.tileGrid.tiles[x, y] = _pool.CreateEntity().IsTile(true).AddGridPosition(x, y).IsImpassible(true);
 			}
 		}
 
@@ -89,15 +63,16 @@ public class LoadLevel : IInitializeSystem, ISetPool
 
 	private void CarvePath(int length)
 	{
-		var x_start = Random.Range(0, _pool.collisionGrid.passible.GetLength(0)-1);
-		var y_start = Random.Range(0, _pool.collisionGrid.passible.GetLength(1)-1);
+		var x_start = Random.Range(0, _pool.collisionGrid.passible.GetLength(0) - 1);
+		var y_start = Random.Range(0, _pool.collisionGrid.passible.GetLength(1) - 1);
 
+		//TODO: Don't spawn poor roomy in this lonely function
 		Entity roomy =
-	_pool.CreateEntity()
-		.IsRoomy(true)
-		.IsInputReceiver(true)
-		.AddGridPosition(x_start, y_start)
-		.AddHeading(Move.Direction.Up);
+			_pool.CreateEntity()
+				.IsRoomy(true)
+				.IsInputReceiver(true)
+				.AddGridPosition(x_start, y_start)
+				.AddHeading(Move.Direction.Up);
 
 		var roomyObj = Resources.Load("Roomy") as GameObject;
 		roomy.AddView(GameObject.Instantiate(roomyObj).transform);
@@ -114,6 +89,7 @@ public class LoadLevel : IInitializeSystem, ISetPool
 			if (_pool.collisionGrid.passible[x, y]) return false;
 
 			_pool.collisionGrid.passible[x, y] = true;
+			_pool.tileGrid.tiles[x, y].isImpassible = false;
 
 			if (length == 0)
 			{
@@ -136,7 +112,9 @@ public class LoadLevel : IInitializeSystem, ISetPool
 				if (BackTrackCarve(length - 1, xn, yn)) return true;
 			}
 
+			//No good path found, track back
 			_pool.collisionGrid.passible[x, y] = false;
+			_pool.tileGrid.tiles[x, y].isImpassible = true;
 		}
 		return false;
 	}
@@ -175,7 +153,7 @@ public class LoadLevel : IInitializeSystem, ISetPool
 				{
 					u = v;
 					min_dist = v.pooDistance.distance;
-				} 			
+				}
 			}
 			Q.Remove(u);
 
@@ -194,9 +172,9 @@ public class LoadLevel : IInitializeSystem, ISetPool
 				    yn < _pool.collisionGrid.passible.GetLength(1))
 				{
 					var v = _pool.tileGrid.tiles[xn, yn];
-					
+
 					//Array can contain impassible tiles
-					if (!v.hasPooDistance) continue; 
+					if (!v.hasPooDistance) continue;
 
 					var alt = u.pooDistance.distance + 1;
 					if (alt < v.pooDistance.distance)
@@ -260,9 +238,35 @@ public class LoadLevel : IInitializeSystem, ISetPool
 	}
 
 
-	private
-		void LoadObstacles
-		()
+	private void Shuffle<T, U>(T[] array1, U[] array2)
+	{
+		// Knuth shuffle algorithm :: courtesy of Wikipedia :)
+		for (int t = 0; t < array1.Length; t++)
+		{
+			int r = UnityEngine.Random.Range(t, array1.Length);
+			var tmp1 = array1[t];
+			array1[t] = array1[r];
+			array1[r] = tmp1;
+
+			var tmp2 = array2[t];
+			array2[t] = array2[r];
+			array2[r] = tmp2;
+		}
+	}
+
+	private void Shuffle<T>(T[] array1)
+	{
+		// Knuth shuffle algorithm :: courtesy of Wikipedia :)
+		for (int t = 0; t < array1.Length; t++)
+		{
+			int r = UnityEngine.Random.Range(t, array1.Length);
+			var tmp1 = array1[t];
+			array1[t] = array1[r];
+			array1[r] = tmp1;
+		}
+	}
+
+	private void LoadObstacles()
 	{
 		obstacles = new GameObject[assets.Length];
 		footprints = new Footprint[assets.Length];
@@ -273,25 +277,59 @@ public class LoadLevel : IInitializeSystem, ISetPool
 			footprints[i] = obstacles[i].GetComponent<Footprint>();
 		}
 
-		for (int x = 0; x < _pool.collisionGrid.passible.GetLength(0); x++)
+		//We shuffle the tiles as well.
+		var group = _pool.GetGroup(Matcher.Impassible);
+		var spots = group.GetEntities();
+		Array.Sort<Entity>(spots, this);
+		
+		foreach (var spot in spots)
 		{
-			for (int y = 0; y < _pool.collisionGrid.passible.GetLength(1); y++)
+			var x = spot.gridPosition.x;
+			var y = spot.gridPosition.y;
+
+			for (int i = 0; i < assets.Length; i++)
 			{
-				for (int i = 0; i < assets.Length; i++)
+				if (Fits(x, y, footprints[i].mask))
 				{
-					if (Fits(x, y, footprints[i].mask))
-					{
-						Occupy(x, y, footprints[i].mask);
-						Place(x, y, obstacles[i]);
-						break;
-					}
+					Occupy(x, y, footprints[i].mask);
+					Place(x, y, obstacles[i]);
+					break;
 				}
 			}
 		}
 	}
 
-	public void SetPool (Pool pool)
+
+	public void SetPool(Pool pool)
 	{
 		_pool = pool;
+	}
+
+	public int Compare(Entity a, Entity b)
+	{
+		var xmax = _pool.collisionGrid.passible.GetLength(0);
+		var ymax = _pool.collisionGrid.passible.GetLength(1);
+
+		var score_a = 0;
+		for (int i = a.gridPosition.x; i < Mathf.Min(a.gridPosition.x + 3, xmax); i++)
+		{
+			for (int j = a.gridPosition.y; j < Mathf.Min(a.gridPosition.y + 3, ymax); j++)
+			{
+				if (!_pool.collisionGrid.passible[i, j])
+					score_a++;
+			}
+		}
+
+		var score_b = 0;
+		for (int i = b.gridPosition.x; i < Mathf.Min(b.gridPosition.x + 3, xmax); i++)
+		{
+			for (int j = b.gridPosition.y; j < Mathf.Min(b.gridPosition.y + 3, ymax); j++)
+			{
+				if (!_pool.collisionGrid.passible[i, j])
+					score_b++;
+			}
+		}
+
+		return score_b - score_a;
 	}
 }

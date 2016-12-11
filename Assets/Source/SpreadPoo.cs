@@ -11,7 +11,7 @@ public class SpreadPoo : IInitializeSystem, IExecuteSystem, ISetPool
 	public void SetPool(Pool pool)
 	{
 		_pool = pool;
-		_group = pool.GetGroup(Matcher.AllOf(Matcher.Dirty, Matcher.View));
+		_group = pool.GetGroup(Matcher.AllOf(Matcher.Dirty, Matcher.View, Matcher.Charge, Matcher.Traveling));
 	}
 
 	private PicaVoxel.Volume _floor;
@@ -28,6 +28,9 @@ public class SpreadPoo : IInitializeSystem, IExecuteSystem, ISetPool
 		//Show dirty voxels from the filth layer in circle around dirty object's position
 		foreach (var entity in _group.GetEntities())
 		{
+			//Stop spreading if battery is dead.
+			if (entity.charge.value <= 0) continue;
+
 			var pos = entity.view.transform.position;
 			pos.x += UnityEngine.Random.Range(-0.2f, 0.2f);
 			pos.z += UnityEngine.Random.Range(-0.2f, 0.2f);
@@ -42,6 +45,17 @@ public class SpreadPoo : IInitializeSystem, IExecuteSystem, ISetPool
 			pos = entity.view.transform.position;
 			pos.x += UnityEngine.Random.Range(-0.08f, 0.08f);
 			pos.z += UnityEngine.Random.Range(-0.08f, 0.08f);
+
+			voxel = _floor.GetVoxelAtWorldPosition(pos);
+			if (voxel != null && voxel.Value.State != VoxelState.Active)
+			{
+				_floor.SetVoxelStateAtWorldPosition(pos, VoxelState.Active);
+				_pool.ReplaceScore(_pool.score.value + 1);
+
+			}
+			pos = entity.view.transform.position;
+			pos.x += UnityEngine.Random.Range(-0.06f, 0.06f);
+			pos.z += UnityEngine.Random.Range(-0.06f, 0.06f);
 
 			voxel = _floor.GetVoxelAtWorldPosition(pos);
 			if (voxel != null && voxel.Value.State != VoxelState.Active)
