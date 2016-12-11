@@ -9,7 +9,7 @@ public class LoadLevel : IInitializeSystem, ISetPool
 	private Pool _pool;
 
 	//Roughly ordered by size (magic knowledge.
-	private static readonly string[] assets = { "Table4", "Table3s", "Table3n", "Table3e", "Table3w", "Table2v", "Table2h", "Table1n", "Table1s", "Table", "Sofa2e", "Sofa2w", "Sofa2s", "Sofa2n", "Chair" };
+	private static readonly string[] assets = { "Table4", "Table3s", "Table3n", "Table3e", "Table3w", "Table2v", "Table2h", "Table1n", "Table1s", "Table", "Sofa2e", "Sofa2w", "Sofa2s", "Sofa2n", "Chairn", "Chairs", "Chaire", "Chairw" };
 
 	private static GameObject[] obstacles;
 	private static Footprint[] footprints;
