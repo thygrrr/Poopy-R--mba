@@ -14,19 +14,19 @@ public class PlayerInput : IExecuteSystem, ISetPool
 	{
 		foreach (var receiver in _receivers.GetEntities())
 		{
-			if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+			if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
 			{
 				receiver.AddMove(Move.Direction.Up);
 			}
-			else if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+			else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
 			{
 				receiver.AddMove(Move.Direction.Left);
 			}
-			else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+			else if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
 			{
 				receiver.AddMove(Move.Direction.Down);
 			}
-			else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+			else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
 			{
 				receiver.AddMove(Move.Direction.Right);
 			}

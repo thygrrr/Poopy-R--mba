@@ -17,7 +17,7 @@ public class PatternGenerator : MonoBehaviour
 	private Color Fuzz(Color c)
 	{
 		var l = Random.Range(-noise, noise);
-		return new Color(c.r + l, c.g + l, c.b + l);
+		return new Color(c.r + l, c.g + l, c.b + l, c.a + l);
 	}
 
 	void Awake()

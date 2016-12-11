@@ -79,3 +79,9 @@ public class InputReceiver : IComponent
 {
 	
 }
+
+
+public class Physics : IComponent
+{
+	public Rigidbody rigidbody;
+}

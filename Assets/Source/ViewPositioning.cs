@@ -2,60 +2,6 @@
 using Entitas;
 using UnityEngine;
 
-public class LinkViewsToEntities : IReactiveSystem, ISetPool
-{
-	private Pool _pool;
-	public void Execute(List<Entity> entities)
-	{
-		foreach (var entity in entities)
-		{
-			entity.view.transform.gameObject.Link(entity, _pool);
-		}
-	}
-
-	public TriggerOnEvent trigger
-	{
-		get
-		{
-			return Matcher.View.OnEntityAdded();
-		}
-	}
-
-	public void SetPool(Pool pool)
-	{
-		_pool = pool;
-	}
-}
-
-public class UpdateViewPositions : IExecuteSystem, ISetPool, IEnsureComponents
-{
-	private Group _movers;
-
-	public void SetPool(Pool pool)
-	{
-		_movers = pool.GetGroup(Matcher.AllOf(Matcher.View, Matcher.GridPosition));
-	}
-
-	public void Execute()
-	{
-		foreach (var mover in _movers.GetEntities())
-		{
-			var world = mover.gridPosition.WorldPosition();
-
-			mover.view.transform.position = Vector3.MoveTowards(mover.view.transform.position, world, Time.deltaTime);
-		}
-	}
-
-	public TriggerOnEvent trigger
-	{
-		get { return Matcher.View.OnEntityAdded(); }
-	}
-
-	public IMatcher ensureComponents
-	{
-		get { return Matcher.AllOf(Matcher.View, Matcher.GridPosition); }
-	}
-}
 
 public class InitViewPositions : IReactiveSystem, IEnsureComponents
 {
@@ -75,5 +21,40 @@ public class InitViewPositions : IReactiveSystem, IEnsureComponents
 	public IMatcher ensureComponents
 	{
 		get { return Matcher.AllOf(Matcher.View, Matcher.GridPosition); }
+	}
+}
+
+
+
+public class LinkViewsToEntities : IReactiveSystem, ISetPool
+{
+	private Pool _pool;
+	public void Execute(List<Entity> entities)
+	{
+		foreach (var entity in entities)
+		{
+			//Bind Gameobject
+			entity.view.transform.gameObject.Link(entity, _pool);
+
+			//Bind Rigidbody
+			var rigidbody = entity.view.transform.GetComponent<Rigidbody>();
+			if (rigidbody != null)
+			{
+				entity.AddPhysics(rigidbody);
+			}
+		}
+	}
+
+	public TriggerOnEvent trigger
+	{
+		get
+		{
+			return Matcher.View.OnEntityAdded();
+		}
+	}
+
+	public void SetPool(Pool pool)
+	{
+		_pool = pool;
 	}
 }
