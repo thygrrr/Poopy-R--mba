@@ -41,6 +41,9 @@ public class Roomy : IComponent
 	
 }
 
+public class Poop : IComponent
+{ }
+
 public class Move : IComponent
 {
 	public Direction direction;

@@ -22,9 +22,11 @@ public class FloorPlan : MonoBehaviour
 
 		systems.Add(pool.CreateSystem(new VacuumTiles()));
 
-		systems.Add(pool.CreateSystem(new UpdateViewPositions()));
+		systems.Add(pool.CreateSystem(new InitViewPositions()));
 
 		systems.Add(pool.CreateSystem(new AnimateDirty()));
+
+		systems.Add(pool.CreateSystem(new UpdateViewPositions()));
 	}
 
 

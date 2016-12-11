@@ -15,16 +15,23 @@ public class EntityLinkInspector : Editor
 	public override void OnInspectorGUI()
 	{
 		var link = (EntityLink)target;
-		EditorGUILayout.LabelField(link.entity.ToString());
-
-		if (GUILayout.Button("Show entity"))
+		if (link.entity != null)
 		{
-			Selection.activeGameObject = FindObjectsOfType<EntityBehaviour>()
-				.Single(e => e.entity == link.entity).gameObject;
+			EditorGUILayout.LabelField(link.entity.ToString());
+
+			if (GUILayout.Button("Show entity"))
+			{
+				Selection.activeGameObject = FindObjectsOfType<EntityBehaviour>()
+					.Single(e => e.entity == link.entity).gameObject;
+			}
+
+			EditorGUILayout.Space();
+
+			EntityDrawer.DrawEntity(link.pool, link.entity);
 		}
-
-		EditorGUILayout.Space();
-
-		EntityDrawer.DrawEntity(link.pool, link.entity);
+		else
+		{
+			EditorGUILayout.LabelField("No Entity");
+		}
 	}
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Remoting.Messaging;
 using Entitas;
-using PicaVoxel;
 using UnityEngine;
 
 public class LoadLevel : IInitializeSystem, ISetPool
@@ -16,7 +15,7 @@ public class LoadLevel : IInitializeSystem, ISetPool
 		_pool.SetTileGrid(new Entity[8, 8]);
 
 
-		Entity roomy = _pool.CreateEntity().IsRoomy(true).IsInputReceiver(true).AddGridPosition(0, 0).AddCharge(8*8-1);
+		Entity roomy = _pool.CreateEntity().IsRoomy(true).IsInputReceiver(true).AddGridPosition(0, 0).AddCharge(8 * 8 - 1);
 		var roomyObj = GameObject.FindGameObjectWithTag("Player");
 		roomy.AddView(roomyObj.transform);
 
@@ -25,12 +24,18 @@ public class LoadLevel : IInitializeSystem, ISetPool
 		{ 
 			for (int j = 0; j < 8; j++)
 			{
-				Entity tile = _pool.CreateEntity().IsTile(true).IsDirty(true).AddGridPosition(i, j);
+				Entity tile = _pool.CreateEntity().IsTile(true).AddGridPosition(i, j);
 
 				_pool.collisionGrid.passible[i,j] = true;
 				_pool.tileGrid.tiles[i, j] = tile;
 			}
 		}
+
+		var pooObj = GameObject.FindGameObjectWithTag("Poo");
+		Entity pooTile = _pool.tileGrid.tiles[(int)(pooObj.transform.position.x * 2.0f), (int)(pooObj.transform.position.z * 2.0)];
+		pooTile.AddView(pooObj.transform);
+		pooTile.isPoop = true;
+
 	}
 
 	public void SetPool(Pool pool)
@@ -121,7 +126,7 @@ public class Movement : IExecuteSystem, ISetPool
 			if (!mover.gridPosition.Equals(x, y))
 			{
 				if (_pool.collisionGrid.passible[x,y])
-				{ 
+				{
 					mover.ReplaceGridPosition(x, y);
 				}
 			}
@@ -160,7 +165,7 @@ public class LinkViewsToEntities : IReactiveSystem, ISetPool
 	}
 }
 
-public class UpdateViewPositions : IReactiveSystem, IEnsureComponents
+public class InitViewPositions : IReactiveSystem, IEnsureComponents
 {
 	public void Execute(List<Entity> entities)
 	{
@@ -172,53 +177,43 @@ public class UpdateViewPositions : IReactiveSystem, IEnsureComponents
 
 	public TriggerOnEvent trigger
 	{
-		get { return Matcher.GridPosition.OnEntityAdded(); }
+		get { return Matcher.View.OnEntityAdded(); }
 	}
 
 	public IMatcher ensureComponents
 	{
-		get { return Matcher.View; }
+		get { return Matcher.AllOf(Matcher.View, Matcher.GridPosition); }
 	}
 }
 
-public class AnimateDirty : IInitializeSystem, IReactiveSystem
+
+public class UpdateViewPositions : IExecuteSystem, ISetPool
 {
-	private PicaVoxel.Volume _floor;
+	private Pool _pool;
+	private Group _movers;
 
-	public TriggerOnEvent trigger
+	public void SetPool(Pool pool)
 	{
-		get { return Matcher.Dirty.OnEntityAddedOrRemoved(); }
+		_pool = pool;
+		_movers = pool.GetGroup(Matcher.AllOf(Matcher.View, Matcher.GridPosition));
 	}
 
-	private Color RandomColor(bool dirty)
+	public void Execute()
 	{
-		if (!dirty) return new Color(UnityEngine.Random.Range(0.8f, 0.85f), UnityEngine.Random.Range(0.85f, 0.9f), UnityEngine.Random.Range(0.75f, 0.8f), 1.0f);
-
-		return new Color(UnityEngine.Random.Range(0.3f, 0.35f), UnityEngine.Random.Range(0.2f, 0.3f), UnityEngine.Random.Range(0.0f, 0.1f), 1.0f);
-	}
-
-	public void Execute(List<Entity> entities)
-	{
-		foreach (var entity in entities)
+		foreach (var mover in _movers.GetEntities())
 		{
-			var pos = entity.gridPosition.WorldPosition();
-
-			for (int i = -5; i < 6; i++)
-			{
-				for (int j = -5; j < 6; j++)
-				{
-					_floor.SetVoxelStateAtWorldPosition(
-						pos + Vector3.right * 0.049f * i + Vector3.forward * 0.049f * j,
-						entity.isDirty ? VoxelState.Active : VoxelState.Hidden
-					);
-				}
-			}
+			mover.view.transform.position = Vector3.MoveTowards(mover.view.transform.position, mover.gridPosition.WorldPosition(), Time.deltaTime);
 		}
 	}
 
-	public void Initialize()
+	public TriggerOnEvent trigger
 	{
-		_floor = GameObject.FindGameObjectWithTag("Floor").GetComponent<Volume>();
+		get { return Matcher.View.OnEntityAdded(); }
+	}
+
+	public IMatcher ensureComponents
+	{
+		get { return Matcher.AllOf(Matcher.View, Matcher.GridPosition); }
 	}
 }
 
@@ -247,9 +242,12 @@ public class VacuumTiles : IReactiveSystem, IEnsureComponents, ISetPool
 		{
 			var tile = _pool.tileGrid.tiles[entity.gridPosition.x, entity.gridPosition.y];
 
-			//TODO: If tile is still dirty, play a specific sound
-
-			tile.isDirty = false;
+			// Start spreading the filth afterwards :D
+			if (tile.isPoop)
+			{
+				tile.isPoop = false;
+				entity.isDirty = true;
+			}
 		}
 	}
 }
