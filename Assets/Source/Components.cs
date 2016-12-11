@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Permissions;
 using Entitas;
 using Entitas.CodeGenerator;
+using UnityEditor;
 using UnityEngine;
 
 public class Dirty : IComponent
 {
-	
 }
 
 public class View : IComponent
@@ -16,7 +17,6 @@ public class View : IComponent
 
 public class Tile : IComponent
 {
-
 }
 
 public class Charge : IComponent
@@ -45,11 +45,11 @@ public class Score : IComponent
 
 public class Roomy : IComponent
 {
-	
 }
 
 public class Poop : IComponent
-{ }
+{
+}
 
 public class Move : IComponent
 {
@@ -57,7 +57,57 @@ public class Move : IComponent
 
 	public enum Direction
 	{
-		Up, Left, Down, Right
+		Up,
+		Left,
+		Down,
+		Right
+	}
+
+	private static System.Random rng = new System.Random();
+
+	public static Direction Random()
+	{
+		var v = Enum.GetValues(typeof(Direction));
+		return (Direction)v.GetValue(rng.Next(v.Length));
+	}
+
+	public static Direction[] Shuffled()
+	{
+		Direction[] result = {Direction.Up, Direction.Down, Direction.Left, Direction.Right};
+
+		// Knuth shuffle algorithm :: courtesy of Wikipedia :)
+		for (int t = 0; t < result.Length; t++)
+		{
+			var tmp = result[t];
+			int r = UnityEngine.Random.Range(t, result.Length);
+			result[t] = result[r];
+			result[r] = tmp;
+		}
+
+		return result;
+	}
+
+
+	public static void Apply(Direction d, ref int x, ref int y)
+	{
+		switch (d)
+		{
+			case Direction.Up:
+				y += 1;
+				return;
+
+			case Direction.Down:
+				y -= 1;
+				return;
+
+			case Direction.Right:
+				x += 1;
+				return;
+
+			case Direction.Left:
+				x -= 1;
+				return;
+		}
 	}
 }
 
@@ -87,24 +137,29 @@ public class GridPosition : IComponent
 	public int x;
 	public int y;
 
-	public Vector3 WorldPosition()
+	public Vector3 WorldPosition ()
 	{
-		return new Vector3(0.5f*x, -0.025f, 0.5f*y);
+		return new Vector3(0.5f * x, -0.025f, 0.5f * y);
 	}
 
-	public bool Equals(int x, int y)
+	public bool Equals (int x, int y)
 	{
 		return this.x == x && this.y == y;
 	}
 }
 
-public class InputReceiver : IComponent
-{
-	
-}
+	public class InputReceiver : IComponent
+	{
+	}
 
 
-public class Physics : IComponent
+	public class Physics : IComponent
+	{
+		public Rigidbody rigidbody;
+	}
+
+
+public class PooDistance : IComponent
 {
-	public Rigidbody rigidbody;
+	public int distance;
 }
