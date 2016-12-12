@@ -12,7 +12,7 @@ public class SpreadPoo : IInitializeSystem, IExecuteSystem, ISetPool
 	public void SetPool(Pool pool)
 	{
 		_pool = pool;
-		_group = pool.GetGroup(Matcher.AllOf(Matcher.Dirty, Matcher.View, Matcher.Charge, Matcher.Traveling));
+		_group = pool.GetGroup(Matcher.AllOf(Matcher.Dirty, Matcher.View, Matcher.Charge));
 	}
 
 	private PicaVoxel.Volume _floor;
@@ -66,8 +66,14 @@ public class SpreadPoo : IInitializeSystem, IExecuteSystem, ISetPool
 				score++;
 			}
 
-			_pool.ReplaceScore(_pool.score.value + 1);
-			_pool.ReplacePercentage(Mathf.Min(100.0f, _pool.percentage.value + (float)score/2.25f));
+			//Mark tiles as dirty
+			_pool.tileGrid.tiles[entity.gridPosition.x, entity.gridPosition.y].isDirty = true;
+
+			float is_spread = _pool.GetGroup(Matcher.AllOf(Matcher.Tile, Matcher.Dirty).NoneOf(Matcher.Impassible)).count;
+			float to_spread = _pool.GetGroup(Matcher.AllOf(Matcher.Tile).NoneOf(Matcher.Impassible)).count;
+
+			_pool.ReplaceScore(_pool.score.value + score);
+			_pool.ReplacePercentage(Mathf.Min(100.0f, is_spread/to_spread*100.0f));
 
 			GameObject.FindGameObjectWithTag("Percentage").GetComponent<Text>().text = string.Format("Spread {0}%", (int)Mathf.Round(_pool.percentage.value));
 			GameObject.FindGameObjectWithTag("Score").GetComponent<Text>().text = string.Format("{0:0000000}", _pool.score.value);

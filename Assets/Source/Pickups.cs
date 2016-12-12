@@ -36,7 +36,12 @@ public class Pickups : IReactiveSystem, IEnsureComponents, ISetPool
 				tile.RemoveView();
 				entity.isDirty = true;
 
-				//TODO: Play sound.
+				//Play sound.
+				AudioSource audio = Camera.main.GetComponent<AudioSource>();
+				Sounds sounds = Camera.main.GetComponent<Sounds>();
+
+				audio.clip = sounds.pickup;
+				audio.Play();
 			}
 		}
 	}

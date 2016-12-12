@@ -60,8 +60,11 @@ public class LoadLevel : IReactiveSystem, ISetPool, IComparer<Entity>
 		var _floor = GameObject.FindGameObjectWithTag("Floor").GetComponent<Volume>();
 
 		for (int x = 0; x < _floor.Frames[0].XSize; x++)
-			for (int z = 0; z < _floor.Frames[0].ZSize; z++)
-				_floor.SetVoxelStateAtArrayPosition(new PicaVoxelPoint(x, 0, z), VoxelState.Hidden);
+			for (int y = 0; y < _floor.Frames[0].YSize; y++)
+				for (int z = 0; z < _floor.Frames[0].ZSize; z++)
+				_floor.SetVoxelStateAtArrayPosition(new PicaVoxelPoint(x, y, z), VoxelState.Hidden);
+
+		_floor.UpdateAllChunks();
 
 		foreach (var entity in _pool.GetGroup(Matcher.View).GetEntities())
 		{
@@ -88,7 +91,7 @@ public class LoadLevel : IReactiveSystem, ISetPool, IComparer<Entity>
 
 		GameObject.FindGameObjectWithTag("Percentage").GetComponent<Text>().text = string.Format("Spread {0}%", (int)Mathf.Round(_pool.percentage.value));
 
-		var length = difficulty[level];
+		var length = difficulty[Mathf.Min(difficulty.Length - 1, level)];
 		GameObject.FindGameObjectWithTag("Level").GetComponent<Text>().text = "Level " + (level+1);
 
 		GenerateLevel(length);
@@ -402,14 +405,26 @@ public class LoadLevel : IReactiveSystem, ISetPool, IComparer<Entity>
 
 	public void Execute(List<Entity> entities)
 	{
+		AudioSource audio = Camera.main.GetComponent<AudioSource>();
+		Sounds sounds = Camera.main.GetComponent<Sounds>();
+
 		if (_pool.isSuccess)
 		{
+			//Play sound.
+			audio.clip = sounds.success;
+			audio.Play();
+
 			level++;
+
 			GameObject.FindGameObjectWithTag("Full").GetComponent<SpriteRenderer>().enabled = true;
 		}
 
 		if (_pool.isFailure)
 		{
+			//Play sound.
+			audio.clip = sounds.failure;
+			audio.Play();
+
 			if (level < 0)
 			{
 				//Hack for first level
