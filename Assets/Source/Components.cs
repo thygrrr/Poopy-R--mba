@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Security.Permissions;
 using Entitas;
 using Entitas.CodeGenerator;
+
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
+
 using UnityEngine;
 
 public class Dirty : IComponent

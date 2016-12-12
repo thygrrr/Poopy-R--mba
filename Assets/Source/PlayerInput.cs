@@ -18,25 +18,25 @@ public class PlayerInput : IExecuteSystem, ISetPool
 
 		foreach (var receiver in _receivers.GetEntities())
 		{
-			if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
+			if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
 			{
 				receiver.AddMove(Move.Direction.Up);
 				audio.clip = receiver.isDirty ? sounds.dirty : sounds.clean;
 				audio.Play();
 			}
-			else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
+			else if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
 			{
 				receiver.AddMove(Move.Direction.Left);
 				audio.clip = receiver.isDirty ? sounds.dirty : sounds.clean;
 				audio.Play();
 			}
-			else if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
+			else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
 			{
 				receiver.AddMove(Move.Direction.Down);
 				audio.clip = receiver.isDirty ? sounds.dirty : sounds.clean;
 				audio.Play();
 			}
-			else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
+			else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
 			{
 				receiver.AddMove(Move.Direction.Right);
 				audio.clip = receiver.isDirty ? sounds.dirty : sounds.clean;

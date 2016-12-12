@@ -1,12 +1,13 @@
 ﻿using System;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using Entitas;
 using Entitas.Unity.VisualDebugging;
 using PicaVoxel;
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditorInternal;
+#endif
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
