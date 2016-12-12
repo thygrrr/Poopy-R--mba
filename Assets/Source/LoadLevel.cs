@@ -1,17 +1,22 @@
 ﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Entitas;
 using Entitas.Unity.VisualDebugging;
+using PicaVoxel;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
-public class LoadLevel : IInitializeSystem, ISetPool, IComparer<Entity>
+public class LoadLevel : IReactiveSystem, ISetPool, IComparer<Entity>
 {
 	private Pool _pool;
+
+	private int level = int.MinValue;
 
 	//Roughly ordered by size (magic knowledge.
 	private static string[] huge =
@@ -49,18 +54,42 @@ public class LoadLevel : IInitializeSystem, ISetPool, IComparer<Entity>
 	private static GameObject[] obstacles;
 	private static Footprint[] footprints;
 
+	public void DestroyLoadedObjects()
+	{
+		//Clear floor
+		var _floor = GameObject.FindGameObjectWithTag("Floor").GetComponent<Volume>();
+
+		for (int x = 0; x < _floor.Frames[0].XSize; x++)
+			for (int z = 0; z < _floor.Frames[0].ZSize; z++)
+				_floor.SetVoxelStateAtArrayPosition(new PicaVoxelPoint(x, 0, z), VoxelState.Hidden);
+
+		foreach (var entity in _pool.GetGroup(Matcher.View).GetEntities())
+		{
+			Object.Destroy(entity.view.transform.gameObject);
+			_pool.DestroyEntity(entity);
+		}
+
+		foreach (var entity in _pool.GetGroup(Matcher.Tile).GetEntities())
+		{
+			_pool.DestroyEntity(entity);
+		}
+	}
+
 	public void Initialize()
 	{
-		_pool.SetCollisionGrid(new bool[8, 8], new bool[8, 8]);
-		_pool.SetTileGrid(new Entity[8, 8]);
-		_pool.SetScore(0);
+		DestroyLoadedObjects();
 
-		_pool.SetPercentage(0);
+		_pool.ReplaceCollisionGrid(new bool[8, 8], new bool[8, 8]);
+		_pool.ReplaceTileGrid(new Entity[8, 8]);
+
+		if (!_pool.hasScore) _pool.SetScore(0);
+
+		_pool.ReplacePercentage(0);
+
 		GameObject.FindGameObjectWithTag("Percentage").GetComponent<Text>().text = string.Format("Spread {0}%", (int)Mathf.Round(_pool.percentage.value));
-		var level = 1;
 
 		var length = difficulty[level];
-		GameObject.FindGameObjectWithTag("Level").GetComponent<Text>().text = "Level " + level;
+		GameObject.FindGameObjectWithTag("Level").GetComponent<Text>().text = "Level " + (level+1);
 
 		GenerateLevel(length);
 
@@ -369,5 +398,36 @@ public class LoadLevel : IInitializeSystem, ISetPool, IComparer<Entity>
 		}
 
 		return score_b - score_a;
+	}
+
+	public void Execute(List<Entity> entities)
+	{
+		if (_pool.isSuccess)
+		{
+			level++;
+			GameObject.FindGameObjectWithTag("Full").GetComponent<SpriteRenderer>().enabled = true;
+		}
+
+		if (_pool.isFailure)
+		{
+			if (level < 0)
+			{
+				//Hack for first level
+				level = 0;
+			}
+			else
+			{
+				GameObject.FindGameObjectWithTag("Missed").GetComponent<SpriteRenderer>().enabled = true;
+			}
+		}
+
+		_pool.isSuccess = false;
+		_pool.isFailure = false;
+
+		Initialize();
+	}
+
+public TriggerOnEvent trigger {
+		get { return Matcher.AnyOf(Matcher.Success, Matcher.Failure).OnEntityAdded(); }
 	}
 }

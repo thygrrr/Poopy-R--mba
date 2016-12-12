@@ -33,6 +33,8 @@ public class FloorPlan : MonoBehaviour
 	void Start()
 	{
 		systems.Initialize();
+
+		pool.isFailure = true;
 	}
 
 

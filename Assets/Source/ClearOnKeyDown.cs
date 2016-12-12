@@ -8,10 +8,12 @@ public class ClearOnKeyDown : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		if (Input.anyKey)
+		if (Input.anyKeyDown)
 		{
-			Object.Destroy(gameObject);
-		}
-		
+			foreach (var r in gameObject.GetComponentsInChildren<SpriteRenderer>())
+			{
+				r.enabled = false;
+			}
+		}		
 	}
 }

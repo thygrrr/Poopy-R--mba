@@ -67,7 +67,7 @@ public class SpreadPoo : IInitializeSystem, IExecuteSystem, ISetPool
 			}
 
 			_pool.ReplaceScore(_pool.score.value + 1);
-			_pool.ReplacePercentage(Mathf.Min(100.0f, _pool.percentage.value + (float)score/3.3f));
+			_pool.ReplacePercentage(Mathf.Min(100.0f, _pool.percentage.value + (float)score/2.25f));
 
 			GameObject.FindGameObjectWithTag("Percentage").GetComponent<Text>().text = string.Format("Spread {0}%", (int)Mathf.Round(_pool.percentage.value));
 			GameObject.FindGameObjectWithTag("Score").GetComponent<Text>().text = string.Format("{0:0000000}", _pool.score.value);
