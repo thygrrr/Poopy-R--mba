@@ -6,6 +6,7 @@ using Entitas.Unity.VisualDebugging;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class LoadLevel : IInitializeSystem, ISetPool, IComparer<Entity>
@@ -13,15 +14,20 @@ public class LoadLevel : IInitializeSystem, ISetPool, IComparer<Entity>
 	private Pool _pool;
 
 	//Roughly ordered by size (magic knowledge.
-	private static string[] large =
+	private static string[] huge =
 	{
 		"Table4", "Table3s", "Table3n", "Table3e", "Table3w", "Table2v", "Table2h",
 		"Table1n", "Table1s", "Table"
 	};
 
+	private static string[] large =
+	{
+		"Boxes", "CoffeeTable",
+	};
+
 	private static string[] medium =
 	{
-		"Boxes", "Boxes", "CoffeeTable", "CoffeeTable", "Wall2h",  "Wall2v",  "Sofa2e", "Sofa2w", "Boxes2", "Sofa2s", "Sofa2n", "Boxes2"
+		 "Wall2h",  "Wall2v",  "Sofa2e", "Sofa2w", "Boxes2", "Sofa2s", "Sofa2n", "Boxes2", "Boxes2", "Boxes2"
 	};
 
 	private static string[] small =
@@ -49,17 +55,24 @@ public class LoadLevel : IInitializeSystem, ISetPool, IComparer<Entity>
 		_pool.SetTileGrid(new Entity[8, 8]);
 		_pool.SetScore(0);
 
-		var length = difficulty[5];
+		_pool.SetPercentage(0);
+		GameObject.FindGameObjectWithTag("Percentage").GetComponent<Text>().text = string.Format("Spread {0}%", (int)Mathf.Round(_pool.percentage.value));
+		var level = 1;
+
+		var length = difficulty[level];
+		GameObject.FindGameObjectWithTag("Level").GetComponent<Text>().text = "Level " + level;
 
 		GenerateLevel(length);
 
 		LoadObstacles(lights, 2);
-		LoadObstacles(large);
+		LoadObstacles(huge, 1);
+		LoadObstacles(large, 2);
 		LoadObstacles(medium);
 		LoadObstacles(small);
 
 		Entity roomy = _pool.GetGroup(Matcher.Roomy).GetSingleEntity();
 		roomy.AddCharge(length + DistanceToPoo(roomy.gridPosition.x, roomy.gridPosition.y));
+		GameObject.FindGameObjectWithTag("Charge").GetComponent<Text>().text = "Charge " + roomy.charge.value;
 	}
 
 

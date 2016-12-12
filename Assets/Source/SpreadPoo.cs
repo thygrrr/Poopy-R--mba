@@ -2,6 +2,7 @@
 using Entitas.Unity.VisualDebugging;
 using PicaVoxel;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SpreadPoo : IInitializeSystem, IExecuteSystem, ISetPool
 {
@@ -28,6 +29,8 @@ public class SpreadPoo : IInitializeSystem, IExecuteSystem, ISetPool
 		//Show dirty voxels from the filth layer in circle around dirty object's position
 		foreach (var entity in _group.GetEntities())
 		{
+			int score = 0;
+
 			//Stop spreading if battery is dead.
 			if (entity.charge.value <= 0) continue;
 
@@ -39,7 +42,7 @@ public class SpreadPoo : IInitializeSystem, IExecuteSystem, ISetPool
 			if (voxel != null && voxel.Value.State != VoxelState.Active)
 			{
 				_floor.SetVoxelStateAtWorldPosition(pos, VoxelState.Active);
-				_pool.ReplaceScore(_pool.score.value + 1);
+				score++;
 			}
 
 			pos = entity.view.transform.position;
@@ -50,8 +53,7 @@ public class SpreadPoo : IInitializeSystem, IExecuteSystem, ISetPool
 			if (voxel != null && voxel.Value.State != VoxelState.Active)
 			{
 				_floor.SetVoxelStateAtWorldPosition(pos, VoxelState.Active);
-				_pool.ReplaceScore(_pool.score.value + 1);
-
+				score++;
 			}
 			pos = entity.view.transform.position;
 			pos.x += UnityEngine.Random.Range(-0.06f, 0.06f);
@@ -61,8 +63,14 @@ public class SpreadPoo : IInitializeSystem, IExecuteSystem, ISetPool
 			if (voxel != null && voxel.Value.State != VoxelState.Active)
 			{
 				_floor.SetVoxelStateAtWorldPosition(pos, VoxelState.Active);
-				_pool.ReplaceScore(_pool.score.value + 1);
+				score++;
 			}
+
+			_pool.ReplaceScore(_pool.score.value + 1);
+			_pool.ReplacePercentage(Mathf.Min(100.0f, _pool.percentage.value + (float)score/3.3f));
+
+			GameObject.FindGameObjectWithTag("Percentage").GetComponent<Text>().text = string.Format("Spread {0}%", (int)Mathf.Round(_pool.percentage.value));
+			GameObject.FindGameObjectWithTag("Score").GetComponent<Text>().text = string.Format("{0:0000000}", _pool.score.value);
 		}
 	}
 

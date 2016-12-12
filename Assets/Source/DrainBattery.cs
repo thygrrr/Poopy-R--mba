@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using Entitas;
+using Entitas.Unity.VisualDebugging;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class DrainBattery : IReactiveSystem, IEnsureComponents
 {
@@ -21,6 +24,7 @@ public class DrainBattery : IReactiveSystem, IEnsureComponents
 		foreach (var mover in entities)
 		{
 			mover.ReplaceCharge(mover.charge.value - 1);
+			GameObject.FindGameObjectWithTag("Charge").GetComponent<Text>().text = "Charge " + mover.charge.value;
 		}
 	}
 }

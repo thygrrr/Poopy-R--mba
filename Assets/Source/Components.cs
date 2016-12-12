@@ -43,6 +43,12 @@ public class Score : IComponent
 	public int value;
 }
 
+[SingleEntity]
+public class Percentage : IComponent
+{
+	public float value;
+}
+
 public class Roomy : IComponent
 {
 }
