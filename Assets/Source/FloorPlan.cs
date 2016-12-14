@@ -27,6 +27,8 @@ public class FloorPlan : MonoBehaviour
 
 		systems.Add(pool.CreateSystem(new PlayerInput()));
 		systems.Add(pool.CreateSystem(new Movement()));
+
+		systems.Add(pool.CreateSystem(new LevelEnd()));
 	}
 
 
@@ -34,7 +36,7 @@ public class FloorPlan : MonoBehaviour
 	{
 		systems.Initialize();
 
-		pool.isFailure = true;
+		pool.isNextLevel = true;
 	}
 
 

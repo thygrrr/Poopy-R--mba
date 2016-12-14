@@ -29,6 +29,8 @@ public class DrainBattery : IReactiveSystem, IEnsureComponents, ISetPool
 
 			if (mover.charge.value == 0)
 			{
+				mover.isInputReceiver = false;
+
 				if (Mathf.Round(_pool.percentage.value) < 100)
 				{
 					_pool.isSuccess = false;

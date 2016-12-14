@@ -17,20 +17,21 @@ public static class ComponentIds {
     public const int Impassible = 6;
     public const int InputReceiver = 7;
     public const int Move = 8;
-    public const int Orienting = 9;
-    public const int Percentage = 10;
-    public const int Physics = 11;
-    public const int PooDistance = 12;
-    public const int Poop = 13;
-    public const int Roomy = 14;
-    public const int Score = 15;
-    public const int Success = 16;
-    public const int Tile = 17;
-    public const int TileGrid = 18;
-    public const int Traveling = 19;
-    public const int View = 20;
+    public const int NextLevel = 9;
+    public const int Orienting = 10;
+    public const int Percentage = 11;
+    public const int Physics = 12;
+    public const int PooDistance = 13;
+    public const int Poop = 14;
+    public const int Roomy = 15;
+    public const int Score = 16;
+    public const int Success = 17;
+    public const int Tile = 18;
+    public const int TileGrid = 19;
+    public const int Traveling = 20;
+    public const int View = 21;
 
-    public const int TotalComponents = 21;
+    public const int TotalComponents = 22;
 
     public static readonly string[] componentNames = {
         "Charge",
@@ -42,6 +43,7 @@ public static class ComponentIds {
         "Impassible",
         "InputReceiver",
         "Move",
+        "NextLevel",
         "Orienting",
         "Percentage",
         "Physics",
@@ -66,6 +68,7 @@ public static class ComponentIds {
         typeof(Impassible),
         typeof(InputReceiver),
         typeof(Move),
+        typeof(NextLevel),
         typeof(Orienting),
         typeof(Percentage),
         typeof(Physics),

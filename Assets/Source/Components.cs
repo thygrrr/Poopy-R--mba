@@ -189,3 +189,9 @@ public class Success : IComponent
 {
 	
 }
+
+[SingleEntity]
+public class NextLevel : IComponent
+{
+	
+}

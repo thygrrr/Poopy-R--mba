@@ -33,30 +33,27 @@ public class LoadLevel : IReactiveSystem, ISetPool, IComparer<Entity>
 
 	private static string[] medium =
 	{
-		 "Wall2h",  "Wall2v",  "Sofa2e", "Sofa2w", "Boxes2", "Sofa2s", "Sofa2n", "Boxes2", "Boxes2", "Boxes2"
+		 "Desk",  "Wall2v",  "Sofa2e", "Sofa2w", "Boxes2", "Boxes3", "Sofa2s", "Sofa2n", "Boxes2", "Boxes3", 
 	};
 
 	private static string[] small =
 	{
-		 "Chairn", "Chairs", "Chaire", "Chairw"
+		 "Chairn", "Chairs", "Chaire"
 	};
 
 	private static string[] lights =
 	{
-		 "Lamp"
+		 "Lamp", "Lamp", "Television"
 	};
 
 	private static readonly int[] difficulty =
 	{
-		5, 8, 12, 16, 20, 24, 30, 33, 36, 38, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49
+		5, 6, 8, 10, 12, 14, 16, 20, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 38, 40
 	};
 
 
-	private static GameObject[] obstacles;
-	private static Footprint[] footprints;
-
 	public void DestroyLoadedObjects()
-	{
+	{		
 		//Clear floor
 		var _floor = GameObject.FindGameObjectWithTag("Floor").GetComponent<Volume>();
 
@@ -97,15 +94,16 @@ public class LoadLevel : IReactiveSystem, ISetPool, IComparer<Entity>
 
 		GenerateLevel(length);
 
-		LoadObstacles(lights, 2);
-		LoadObstacles(huge, 1);
-		LoadObstacles(large, 2);
-		LoadObstacles(medium);
-		LoadObstacles(small);
-
 		Entity roomy = _pool.GetGroup(Matcher.Roomy).GetSingleEntity();
 		roomy.AddCharge(length + DistanceToPoo(roomy.gridPosition.x, roomy.gridPosition.y));
 		GameObject.FindGameObjectWithTag("Charge").GetComponent<Text>().text = "Charge " + roomy.charge.value;
+
+		LoadObstacles(lights, false);
+		LoadObstacles(huge, false);
+		LoadObstacles(large, false);
+		LoadObstacles(medium);
+		LoadObstacles(small);
+
 	}
 
 
@@ -127,8 +125,8 @@ public class LoadLevel : IReactiveSystem, ISetPool, IComparer<Entity>
 
 	private void CarvePath(int length)
 	{
-		var x_start = Random.Range(0, _pool.collisionGrid.passible.GetLength(0) - 1);
-		var y_start = Random.Range(0, _pool.collisionGrid.passible.GetLength(1) - 1);
+		var x_start = Random.Range(2, _pool.collisionGrid.passible.GetLength(0) - 3);
+		var y_start = Random.Range(2, _pool.collisionGrid.passible.GetLength(1) - 3);
 
 		//TODO: Don't spawn poor roomy in this lonely function
 		Entity roomy =
@@ -140,6 +138,9 @@ public class LoadLevel : IReactiveSystem, ISetPool, IComparer<Entity>
 
 		var roomyObj = Resources.Load("Roomy") as GameObject;
 		roomy.AddView(GameObject.Instantiate(roomyObj).transform);
+
+		//Occupied so no furniture "arches" can cover it
+		_pool.collisionGrid.occupied[x_start, y_start] = true;
 
 
 		BackTrackCarve(length, x_start, y_start);
@@ -162,6 +163,9 @@ public class LoadLevel : IReactiveSystem, ISetPool, IComparer<Entity>
 				tile.isPoop = true;
 				var pooObj = Resources.Load("Poo") as GameObject;
 				tile.AddView(GameObject.Instantiate(pooObj).transform);
+
+				//Occupied so no furniture "arches" can cover it
+				_pool.collisionGrid.occupied[x, y] = true;
 
 				return true;
 			}
@@ -267,8 +271,11 @@ public class LoadLevel : IReactiveSystem, ISetPool, IComparer<Entity>
 				var passible = _pool.collisionGrid.passible[x + i, y + j];
 				var occupied = _pool.collisionGrid.occupied[x + i, y + j];
 
-				//Check if mask fits.
-				if (mask[i, j] && (passible || occupied)) return false;
+				//Don't build anything on occupied tiles
+				if (occupied) return false;
+
+				//Check if mask fits the passible plots
+				if (mask[i, j] && passible) return false;
 
 				//This means the mask has a hole but the map requires it
 				//to be solid. This prevents overlapping furniture.
@@ -330,10 +337,10 @@ public class LoadLevel : IReactiveSystem, ISetPool, IComparer<Entity>
 		}
 	}
 
-	private void LoadObstacles(string[] assets, int count = int.MaxValue)
+	private void LoadObstacles(string[] assets, bool shuffle = true)
 	{
-		obstacles = new GameObject[assets.Length];
-		footprints = new Footprint[assets.Length];
+		var obstacles = new GameObject[assets.Length];
+		var footprints = new Footprint[assets.Length];
 
 		for (int i = 0; i < assets.Length; i++)
 		{
@@ -347,27 +354,48 @@ public class LoadLevel : IReactiveSystem, ISetPool, IComparer<Entity>
 		Array.Sort<Entity>(spots, this);
 
 		//Select small spots first for lights.
-		if (count < int.MaxValue) Array.Reverse(spots);
+		if (!shuffle) Array.Reverse(spots);
 
-		foreach (var spot in spots)
+		if (shuffle)
 		{
-			var x = spot.gridPosition.x;
-			var y = spot.gridPosition.y;
-
-			Shuffle<GameObject, Footprint>(obstacles, footprints);
-
-			for (int i = 0; i < assets.Length; i++)
+			//Attempt to fill each spot with random assets
+			foreach (var spot in spots)
 			{
-				if (Fits(x, y, footprints[i].mask))
+				var x = spot.gridPosition.x;
+				var y = spot.gridPosition.y;
+				Shuffle<GameObject, Footprint>(obstacles, footprints);
+				for (int i = 0; i < assets.Length; i++)
 				{
-					Occupy(x, y, footprints[i].mask);
-					Place(x, y, obstacles[i]);
-					count--;
-					break;
+
+					if (Fits(x, y, footprints[i].mask))
+					{
+						Occupy(x, y, footprints[i].mask);
+						Place(x, y, obstacles[i]);
+						break;
+					}
 				}
 			}
-			if (count == 0) return;
 		}
+		else
+		{
+			//Attempt to place each asset.
+			for (int i = 0; i < assets.Length; i++)
+			{
+				foreach (var spot in spots)
+				{
+					var x = spot.gridPosition.x;
+					var y = spot.gridPosition.y;
+
+					if (Fits(x, y, footprints[i].mask))
+					{
+						Occupy(x, y, footprints[i].mask);
+						Place(x, y, obstacles[i]);
+						break;
+					}
+				}
+			}
+		}
+
 	}
 
 
@@ -390,6 +418,8 @@ public class LoadLevel : IReactiveSystem, ISetPool, IComparer<Entity>
 					score_a++;
 			}
 		}
+		if (a.gridPosition.x == 0 || a.gridPosition.y == 0 || a.gridPosition.x == xmax - 1 || a.gridPosition.y == ymax - 1)
+			score_a += 10;
 
 		var score_b = 0;
 		for (int i = b.gridPosition.x; i < Mathf.Min(b.gridPosition.x + 3, xmax); i++)
@@ -400,50 +430,27 @@ public class LoadLevel : IReactiveSystem, ISetPool, IComparer<Entity>
 					score_b++;
 			}
 		}
+		if (b.gridPosition.x == 0 || b.gridPosition.y == 0 || b.gridPosition.x == xmax - 1 || b.gridPosition.y == ymax - 1)
+			score_b += 10;
 
 		return score_b - score_a;
 	}
 
 	public void Execute(List<Entity> entities)
 	{
-		AudioSource audio = Camera.main.GetComponent<AudioSource>();
-		Sounds sounds = Camera.main.GetComponent<Sounds>();
-
-		if (_pool.isSuccess)
+		if (level < 0)
 		{
-			//Play sound.
-			audio.clip = sounds.success;
-			audio.Play();
-
+			level = 0;
+		}
+		else
+		{
 			level++;
-
-			GameObject.FindGameObjectWithTag("Full").GetComponent<SpriteRenderer>().enabled = true;
 		}
-
-		if (_pool.isFailure)
-		{
-			//Play sound.
-			audio.clip = sounds.failure;
-			audio.Play();
-
-			if (level < 0)
-			{
-				//Hack for first level
-				level = 0;
-			}
-			else
-			{
-				GameObject.FindGameObjectWithTag("Missed").GetComponent<SpriteRenderer>().enabled = true;
-			}
-		}
-
-		_pool.isSuccess = false;
-		_pool.isFailure = false;
-
+		_pool.isNextLevel = false;
 		Initialize();
 	}
 
 public TriggerOnEvent trigger {
-		get { return Matcher.AnyOf(Matcher.Success, Matcher.Failure).OnEntityAdded(); }
+		get { return Matcher.NextLevel.OnEntityAdded(); }
 	}
 }
