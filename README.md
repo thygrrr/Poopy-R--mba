@@ -1,7 +1,6 @@
 ![License](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png) Poopy R**mba
 ======================
 *Made for Ludum Dare 37.*
-
 * #16	Humor	4.09
 * #55	Graphics	4.06
 * #77	Overall	3.83
@@ -30,10 +29,10 @@ Supports WASD and Cursor Keys.
 ---------------
 Play it there. Sorry, the HTML glitched so you have to scroll.
 
-![Warning - bad code](https://i.imgur.com/k8W0KcI.png)
 
 Dependencies
 ------------
+![Warning - bad code](https://i.imgur.com/nWZ5TN2.png)
 * Unity3D 5.x
 * Entitas (some old 0.3x version)
 * PicaVoxel (non-free)
