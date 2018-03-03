@@ -2,6 +2,17 @@
 ======================
 *Made for Ludum Dare 37.*
 
+* #16	Humor	4.09
+* #55	Graphics	4.06
+* #77	Overall	3.83
+* #84	Fun	3.75
+* #143	Innovation	3.60
+* #156	Mood	3.47
+* #233	Theme	3.75
+* #366	Audio	2.56
+
+![Screenshot](https://i.imgur.com/xbFVnKF.jpg)
+
 Object of Play: 
 
 - Step 0: Find the pile of Dog Poop 
@@ -13,17 +24,6 @@ Hint: Don't go anywhere twice, or your CHARGE runs out before you have 100% SPRE
 Hint: Extra Points for more turns (grind that poo into the carpet!) 
 
 Supports WASD and Cursor Keys. 
-
-![Screenshot](https://i.imgur.com/xFd4xqg.png) ![Screenshot](https://i.imgur.com/xbFVnKF.jpg)
-
-* #16	Humor	4.09
-* #55	Graphics	4.06
-* #77	Overall	3.83
-* #84	Fun	3.75
-* #143	Innovation	3.60
-* #156	Mood	3.47
-* #233	Theme	3.75
-* #366	Audio	2.56
 
 
 [Jam Page](http://ludumdare.com/compo/ludum-dare-37/?action=preview&uid=124451)
