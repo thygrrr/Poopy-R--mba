@@ -4,9 +4,9 @@
 
 Object of Play: 
 
-Step 0: Find the pile of Dog Poop 
-Step 1: Get there in as few steps as possible 
-Step 2: Spread the poop everywhere in one go 
+- Step 0: Find the pile of Dog Poop 
+- Step 1: Get there in as few steps as possible 
+- Step 2: Spread the poop everywhere in one go 
 
 Hint: Don't go anywhere twice, or your CHARGE runs out before you have 100% SPREAD. You need full spread to advance to the next level. 
 
