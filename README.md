@@ -24,4 +24,4 @@ Dependencies
 ------------
 * Unity3D 5.x
 * Entitas (some old 0.3x version)
-* InControl
+* PicaVoxel (non-free)
