@@ -1,7 +1,18 @@
-Poopy R**mba
+![License](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png) Poopy R**mba
 ======================
-![License](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)
-A game for Ludum Dare 37!
+*Made for Ludum Dare 37.*
+
+Object of Play: 
+
+Step 0: Find the pile of Dog Poop 
+Step 1: Get there in as few steps as possible 
+Step 2: Spread the poop everywhere in one go 
+
+Hint: Don't go anywhere twice, or your CHARGE runs out before you have 100% SPREAD. You need full spread to advance to the next level. 
+
+Hint: Extra Points for more turns (grind that poo into the carpet!) 
+
+Supports WASD and Cursor Keys. 
 
 ![Screenshot](https://i.imgur.com/xFd4xqg.png) ![Screenshot](https://i.imgur.com/xbFVnKF.jpg)
 
