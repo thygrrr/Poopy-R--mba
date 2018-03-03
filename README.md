@@ -20,3 +20,8 @@ Play it there. Sorry, the HTML glitched so you have to scroll.
 
 ![Warning - bad code](https://i.imgur.com/k8W0KcI.png)
 
+Dependencies
+------------
+* Unity3D 5.x
+* Entitas (some old 0.3x version)
+* InControl
