@@ -1,6 +1,7 @@
 Poopy R**mba
 ======================
-A game for Ludum Dare 37
+[License](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)
+A game for Ludum Dare 37!
 
 ![Screenshot](https://i.imgur.com/xFd4xqg.png) ![Screenshot](https://i.imgur.com/xbFVnKF.jpg)
 
